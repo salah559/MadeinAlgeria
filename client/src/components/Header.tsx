@@ -39,12 +39,8 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/">
-          <div className="flex items-center gap-3 hover-elevate active-elevate-2 px-3 py-2 rounded-md cursor-pointer" data-testid="link-home">
-            <img src={logoImage} alt="Made in Algeria Logo" className="h-16 w-auto" />
-            <div className="flex flex-col">
-              <span className="text-xl font-bold text-foreground leading-tight">Made in Algeria</span>
-              <span className="text-base text-muted-foreground leading-tight">صنع في الجزائر</span>
-            </div>
+          <div className="flex items-center hover-elevate active-elevate-2 px-3 py-2 rounded-md cursor-pointer" data-testid="link-home">
+            <img src={logoImage} alt="Made in Algeria Logo" className="h-20 w-auto" />
           </div>
         </Link>
 
@@ -74,23 +70,23 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-2" data-testid="button-language">
-                <Languages className="w-4 h-4" />
-                <span className="hidden sm:inline">{currentLanguage?.flag}</span>
+              <Button variant="outline" size="sm" className="gap-2 min-w-[120px] justify-start" data-testid="button-language">
+                <span className="text-lg">{currentLanguage?.flag}</span>
+                <span className="font-medium">{currentLanguage?.label}</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{t.common.search}</DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="min-w-[160px]">
+              <DropdownMenuLabel>اختر اللغة / Language</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {languages.map((lang) => (
                 <DropdownMenuItem
                   key={lang.code}
                   onClick={() => setLanguage(lang.code)}
-                  className={language === lang.code ? 'bg-accent' : ''}
+                  className={`gap-2 ${language === lang.code ? 'bg-accent font-semibold' : ''}`}
                   data-testid={`language-${lang.code}`}
                 >
-                  <span className="mr-2">{lang.flag}</span>
-                  {lang.label}
+                  <span className="text-lg">{lang.flag}</span>
+                  <span>{lang.label}</span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
