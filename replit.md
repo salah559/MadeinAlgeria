@@ -95,12 +95,19 @@ npm run db:push
 
 ## إعداد Google OAuth
 
-لتفعيل تسجيل الدخول بـ Google، يجب إعداد Google OAuth في لوحة تحكم Supabase:
+⚠️ **ملاحظة مهمة**: لتفعيل تسجيل الدخول بـ Google، يجب إعداد Google OAuth في لوحة تحكم Supabase.
 
-1. انتقل إلى Supabase Dashboard → Authentication → Providers → Google
-2. فعّل "Enable Sign in with Google"
-3. أدخل Client ID و Client Secret من Google Cloud Console
-4. أضف Callback URL إلى Google OAuth Credentials
+📖 **راجع ملف `GOOGLE_OAUTH_SETUP.md` للحصول على دليل مفصل خطوة بخطوة**
+
+### ملخص سريع:
+1. إنشاء مشروع في Google Cloud Console
+2. إعداد OAuth consent screen
+3. إنشاء OAuth Client ID وClient Secret
+4. إضافة Callback URL من Supabase إلى Google
+5. إدخال Client ID و Secret في Supabase Dashboard
+6. حفظ الإعدادات
+
+**الـ Callback URL الخاص بمشروعك**: `https://hydtiskblituulfdrmzk.supabase.co/auth/v1/callback`
 
 ## التحديثات الأخيرة
 
