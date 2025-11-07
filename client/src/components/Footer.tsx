@@ -1,7 +1,8 @@
-import { Factory, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import logoImage from "@assets/1762327857479 (1)_1762540489724.png";
 
 export default function Footer() {
   return (
@@ -10,9 +11,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Factory className="w-6 h-6 text-primary" />
+              <img src={logoImage} alt="Made in Algeria Logo" className="h-12 w-auto" />
               <div className="flex flex-col">
-                <span className="text-base font-bold">Made in Algeria</span>
+                <span className="text-sm font-bold">Made in Algeria</span>
                 <span className="text-xs text-muted-foreground">صنع في الجزائر</span>
               </div>
             </div>

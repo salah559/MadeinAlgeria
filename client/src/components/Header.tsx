@@ -1,7 +1,8 @@
 import { Link } from "wouter";
-import { Search, Factory, Menu } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import logoImage from "@assets/1762327857479 (1)_1762540489724.png";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -10,11 +11,11 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/">
-          <div className="flex items-center gap-2 hover-elevate active-elevate-2 px-3 py-2 rounded-md cursor-pointer" data-testid="link-home">
-            <Factory className="w-6 h-6 text-primary" />
+          <div className="flex items-center gap-3 hover-elevate active-elevate-2 px-3 py-2 rounded-md cursor-pointer" data-testid="link-home">
+            <img src={logoImage} alt="Made in Algeria Logo" className="h-10 w-auto" />
             <div className="flex flex-col">
-              <span className="text-lg font-bold text-foreground leading-none">Made in Algeria</span>
-              <span className="text-xs text-muted-foreground leading-none">صنع في الجزائر</span>
+              <span className="text-base font-bold text-foreground leading-tight">Made in Algeria</span>
+              <span className="text-xs text-muted-foreground leading-tight">صنع في الجزائر</span>
             </div>
           </div>
         </Link>
