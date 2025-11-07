@@ -2,9 +2,12 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/contexts/LanguageContext";
 import logoImage from "@assets/1762327857479 (1)_1762540489724.png";
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="w-full bg-card border-t mt-16">
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -18,56 +21,56 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              منصة وطنية لربط الزبائن بالمصانع الجزائرية في جميع الولايات والقطاعات
+              {t.footer.description}
             </p>
           </div>
 
           <div>
-            <h3 className="font-bold mb-4 text-foreground">روابط سريعة</h3>
+            <h3 className="font-bold mb-4 text-foreground">{t.footer.quickLinks}</h3>
             <nav className="flex flex-col gap-2">
               <Link href="/about">
                 <Button variant="ghost" className="w-full justify-start px-0 h-auto text-muted-foreground hover:text-foreground">
-                  من نحن
+                  {t.nav.about}
                 </Button>
               </Link>
               <Link href="/factories">
                 <Button variant="ghost" className="w-full justify-start px-0 h-auto text-muted-foreground hover:text-foreground">
-                  المصانع
+                  {t.nav.factories}
                 </Button>
               </Link>
               <Link href="/contact">
                 <Button variant="ghost" className="w-full justify-start px-0 h-auto text-muted-foreground hover:text-foreground">
-                  اتصل بنا
+                  {t.nav.contact}
                 </Button>
               </Link>
             </nav>
           </div>
 
           <div>
-            <h3 className="font-bold mb-4 text-foreground">القطاعات الرئيسية</h3>
+            <h3 className="font-bold mb-4 text-foreground">{t.footer.mainCategories}</h3>
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <span>الصناعات الغذائية</span>
-              <span>الصناعات النسيجية</span>
-              <span>الصناعات الكيميائية</span>
-              <span>الصناعات الميكانيكية</span>
-              <span>الصناعات الإلكترونية</span>
-              <span>مواد البناء</span>
+              <span>{t.categories.food}</span>
+              <span>{t.categories.textile}</span>
+              <span>{t.categories.chemical}</span>
+              <span>{t.categories.mechanical}</span>
+              <span>{t.categories.electronic}</span>
+              <span>{t.categories.construction}</span>
             </nav>
           </div>
 
           <div>
-            <h3 className="font-bold mb-4 text-foreground">النشرة الإخبارية</h3>
+            <h3 className="font-bold mb-4 text-foreground">{t.footer.newsletter}</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              اشترك للحصول على آخر الأخبار والتحديثات
+              {t.footer.subscribe}
             </p>
             <div className="flex gap-2">
               <Input 
                 type="email" 
-                placeholder="البريد الإلكتروني" 
+                placeholder={t.footer.emailPlaceholder}
                 className="flex-1"
                 data-testid="input-newsletter"
               />
-              <Button data-testid="button-subscribe">اشترك</Button>
+              <Button data-testid="button-subscribe">{t.footer.subscribe}</Button>
             </div>
             
             <div className="mt-6 flex flex-col gap-2 text-sm text-muted-foreground">
@@ -89,17 +92,17 @@ export default function Footer() {
 
         <div className="border-t mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2024 Made in Algeria. جميع الحقوق محفوظة.
+            © 2024 Made in Algeria. {t.footer.privacy}
           </p>
           <div className="flex gap-4 text-sm text-muted-foreground">
             <Link href="/privacy">
               <Button variant="ghost" className="text-muted-foreground px-0 h-auto">
-                سياسة الخصوصية
+                {t.footer.privacy}
               </Button>
             </Link>
             <Link href="/terms">
               <Button variant="ghost" className="text-muted-foreground px-0 h-auto">
-                شروط الاستخدام
+                {t.footer.terms}
               </Button>
             </Link>
           </div>

@@ -9,12 +9,12 @@ export const wilayas = [
 ];
 
 export const categories = [
-  { id: "food", nameAr: "الصناعات الغذائية", nameEn: "Food Industry" },
-  { id: "chemical", nameAr: "الصناعات الكيميائية", nameEn: "Chemical Industry" },
-  { id: "textile", nameAr: "الصناعات النسيجية", nameEn: "Textile Industry" },
-  { id: "mechanical", nameAr: "الصناعات الميكانيكية", nameEn: "Mechanical Industry" },
-  { id: "electronic", nameAr: "الصناعات الإلكترونية", nameEn: "Electronics Industry" },
-  { id: "construction", nameAr: "مواد البناء", nameEn: "Construction Materials" },
-  { id: "pharmaceutical", nameAr: "الصناعات الصيدلانية", nameEn: "Pharmaceutical Industry" },
-  { id: "automotive", nameAr: "صناعة السيارات", nameEn: "Automotive Industry" },
+  { id: "food", nameAr: "الصناعات الغذائية", nameEn: "Food Industry", nameFr: "Industrie alimentaire" },
+  { id: "chemical", nameAr: "الصناعات الكيميائية", nameEn: "Chemical Industry", nameFr: "Industrie chimique" },
+  { id: "textile", nameAr: "الصناعات النسيجية", nameEn: "Textile Industry", nameFr: "Industrie textile" },
+  { id: "mechanical", nameAr: "الصناعات الميكانيكية", nameEn: "Mechanical Industry", nameFr: "Industrie mécanique" },
+  { id: "electronic", nameAr: "الصناعات الإلكترونية", nameEn: "Electronics Industry", nameFr: "Industrie électronique" },
+  { id: "construction", nameAr: "مواد البناء", nameEn: "Construction Materials", nameFr: "Matériaux de construction" },
+  { id: "pharmaceutical", nameAr: "الصناعات الصيدلانية", nameEn: "Pharmaceutical Industry", nameFr: "Industrie pharmaceutique" },
+  { id: "automotive", nameAr: "صناعة السيارات", nameEn: "Automotive Industry", nameFr: "Industrie automobile" },
 ];

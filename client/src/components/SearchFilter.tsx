@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { wilayas, categories } from "@/lib/data";
 
 interface SearchFilterProps {
@@ -27,6 +28,8 @@ export default function SearchFilter({
   selectedCategory,
   onCategoryChange,
 }: SearchFilterProps) {
+  const { t, language } = useLanguage();
+
   return (
     <section className="w-full bg-background py-12">
       <div className="max-w-6xl mx-auto px-4">
@@ -35,7 +38,7 @@ export default function SearchFilter({
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
             <Input
               type="search"
-              placeholder="ابحث عن مصنع أو منتج..."
+              placeholder={t.search.placeholder}
               className="w-full pr-12 h-12 text-base"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
@@ -46,10 +49,10 @@ export default function SearchFilter({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select value={selectedWilaya} onValueChange={onWilayaChange}>
               <SelectTrigger className="h-12" data-testid="select-wilaya">
-                <SelectValue placeholder="اختر الولاية" />
+                <SelectValue placeholder={t.search.selectWilaya} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">كل الولايات</SelectItem>
+                <SelectItem value="all">{t.search.allWilayas}</SelectItem>
                 {wilayas.map((wilaya) => (
                   <SelectItem key={wilaya} value={wilaya}>
                     {wilaya}
@@ -60,13 +63,13 @@ export default function SearchFilter({
 
             <Select value={selectedCategory} onValueChange={onCategoryChange}>
               <SelectTrigger className="h-12" data-testid="select-category">
-                <SelectValue placeholder="اختر القطاع" />
+                <SelectValue placeholder={t.search.selectCategory} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">كل القطاعات</SelectItem>
+                <SelectItem value="all">{t.search.allCategories}</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
-                    {category.nameAr}
+                    {language === 'ar' ? category.nameAr : language === 'fr' ? category.nameFr : category.nameEn}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -82,7 +85,7 @@ export default function SearchFilter({
                 onClick={() => onCategoryChange(category.id)}
                 data-testid={`badge-category-${category.id}`}
               >
-                {category.nameAr}
+                {language === 'ar' ? category.nameAr : language === 'fr' ? category.nameFr : category.nameEn}
               </Badge>
             ))}
           </div>

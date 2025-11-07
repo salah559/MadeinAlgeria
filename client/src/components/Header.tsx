@@ -1,8 +1,9 @@
 import { Link } from "wouter";
-import { Search, Menu, LogOut, User } from "lucide-react";
+import { Search, Menu, LogOut, User, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +18,7 @@ import logoImage from "@assets/1762327857479 (1)_1762540489724.png";
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, signOut, loading } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
 
   const getUserInitials = () => {
     if (user?.email) {
@@ -24,6 +26,14 @@ export default function Header() {
     }
     return "U";
   };
+
+  const languages = [
+    { code: 'ar' as const, label: 'العربية', flag: '🇩🇿' },
+    { code: 'en' as const, label: 'English', flag: '🇬🇧' },
+    { code: 'fr' as const, label: 'Français', flag: '🇫🇷' },
+  ];
+
+  const currentLanguage = languages.find(lang => lang.code === language);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -41,27 +51,51 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-1">
           <Link href="/">
             <Button variant="ghost" size="sm" data-testid="button-nav-home">
-              الرئيسية
+              {t.nav.home}
             </Button>
           </Link>
           <Link href="/factories">
             <Button variant="ghost" size="sm" data-testid="button-nav-factories">
-              المصانع
+              {t.nav.factories}
             </Button>
           </Link>
           <Link href="/about">
             <Button variant="ghost" size="sm" data-testid="button-nav-about">
-              من نحن
+              {t.nav.about}
             </Button>
           </Link>
           <Link href="/contact">
             <Button variant="ghost" size="sm" data-testid="button-nav-contact">
-              اتصل بنا
+              {t.nav.contact}
             </Button>
           </Link>
         </nav>
 
         <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="gap-2" data-testid="button-language">
+                <Languages className="w-4 h-4" />
+                <span className="hidden sm:inline">{currentLanguage?.flag}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>{t.common.search}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {languages.map((lang) => (
+                <DropdownMenuItem
+                  key={lang.code}
+                  onClick={() => setLanguage(lang.code)}
+                  className={language === lang.code ? 'bg-accent' : ''}
+                  data-testid={`language-${lang.code}`}
+                >
+                  <span className="mr-2">{lang.flag}</span>
+                  {lang.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Button variant="ghost" size="icon" data-testid="button-search">
             <Search className="w-5 h-5" />
           </Button>
@@ -80,7 +114,7 @@ export default function Header() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">حسابي</p>
+                      <p className="text-sm font-medium leading-none">{t.nav.profile}</p>
                       <p className="text-xs leading-none text-muted-foreground" data-testid="text-user-email">
                         {user.email}
                       </p>
@@ -91,21 +125,21 @@ export default function Header() {
                     <Link href="/admin">
                       <div className="flex items-center w-full cursor-pointer" data-testid="link-admin">
                         <User className="ml-2 h-4 w-4" />
-                        <span>لوحة التحكم</span>
+                        <span>{t.nav.admin}</span>
                       </div>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut} data-testid="button-logout">
                     <LogOut className="ml-2 h-4 w-4" />
-                    <span>تسجيل الخروج</span>
+                    <span>{t.nav.logout}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Link href="/login">
                 <Button variant="default" size="sm" data-testid="button-login">
-                  تسجيل الدخول
+                  {t.nav.login}
                 </Button>
               </Link>
             )
@@ -128,22 +162,22 @@ export default function Header() {
           <nav className="flex flex-col p-4 gap-2">
             <Link href="/">
               <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-home">
-                الرئيسية
+                {t.nav.home}
               </Button>
             </Link>
             <Link href="/factories">
               <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-factories">
-                المصانع
+                {t.nav.factories}
               </Button>
             </Link>
             <Link href="/about">
               <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-about">
-                من نحن
+                {t.nav.about}
               </Button>
             </Link>
             <Link href="/contact">
               <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-contact">
-                اتصل بنا
+                {t.nav.contact}
               </Button>
             </Link>
             {!loading && (
@@ -151,7 +185,7 @@ export default function Header() {
                 <>
                   <Link href="/admin">
                     <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-admin">
-                      لوحة التحكم
+                      {t.nav.admin}
                     </Button>
                   </Link>
                   <Button 
@@ -160,13 +194,13 @@ export default function Header() {
                     onClick={signOut}
                     data-testid="button-mobile-logout"
                   >
-                    تسجيل الخروج
+                    {t.nav.logout}
                   </Button>
                 </>
               ) : (
                 <Link href="/login">
                   <Button variant="default" className="w-full" data-testid="button-mobile-login">
-                    تسجيل الدخول
+                    {t.nav.login}
                   </Button>
                 </Link>
               )
