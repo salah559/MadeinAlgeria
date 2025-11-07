@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Search, Menu, LogOut, User, Languages } from "lucide-react";
+import { Menu, LogOut, User, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -37,10 +37,10 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
         <Link href="/">
           <div className="flex items-center hover-elevate active-elevate-2 px-3 py-2 rounded-md cursor-pointer" data-testid="link-home">
-            <img src={logoImage} alt="Made in Algeria Logo" className="h-20 w-auto" />
+            <img src={logoImage} alt="Made in Algeria Logo" className="h-full w-auto object-contain py-2" />
           </div>
         </Link>
 
@@ -91,10 +91,6 @@ export default function Header() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <Button variant="ghost" size="icon" data-testid="button-search">
-            <Search className="w-5 h-5" />
-          </Button>
 
           {!loading && (
             user ? (
