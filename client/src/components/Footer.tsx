@@ -11,10 +11,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src={logoImage} alt="Made in Algeria Logo" className="h-12 w-auto" />
+              <img src={logoImage} alt="Made in Algeria Logo" className="h-16 w-auto" />
               <div className="flex flex-col">
-                <span className="text-sm font-bold">Made in Algeria</span>
-                <span className="text-xs text-muted-foreground">صنع في الجزائر</span>
+                <span className="text-base font-bold">Made in Algeria</span>
+                <span className="text-sm text-muted-foreground">صنع في الجزائر</span>
               </div>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
