@@ -18,31 +18,259 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Building2, Plus, Edit, Trash2, Search, ShieldAlert } from "lucide-react";
 import { wilayas, categories } from "@/lib/data";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useLocation } from "wouter";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import type { Factory } from "@shared/schema";
 
 const ALLOWED_ADMIN_EMAILS = [
   "bouazzasalah120120@gmail.com",
   "madimoh44@gmail.com"
 ];
 
+type FactoryFormData = {
+  name: string;
+  nameAr: string;
+  description: string;
+  descriptionAr: string;
+  wilaya: string;
+  category: string;
+  products: string[];
+  productsAr: string[];
+  phone: string;
+  email: string;
+  address: string;
+  addressAr: string;
+  logoUrl?: string;
+  imageUrl?: string;
+  latitude?: string;
+  longitude?: string;
+};
+
 export default function Admin() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const { user, loading } = useAuth();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedFactory, setSelectedFactory] = useState<Factory | null>(null);
+  const { user, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
+  const [formData, setFormData] = useState<FactoryFormData>({
+    name: "",
+    nameAr: "",
+    description: "",
+    descriptionAr: "",
+    wilaya: "",
+    category: "",
+    products: [""],
+    productsAr: [""],
+    phone: "",
+    email: "",
+    address: "",
+    addressAr: "",
+    logoUrl: "",
+    imageUrl: "",
+    latitude: "",
+    longitude: "",
+  });
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       setLocation("/login");
     }
-  }, [user, loading, setLocation]);
+  }, [user, authLoading, setLocation]);
 
-  if (loading) {
+  const { data: factories = [], isLoading } = useQuery<Factory[]>({
+    queryKey: ["/api/factories"],
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: FactoryFormData) => {
+      const res = await apiRequest("POST", "/api/factories", data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/factories"] });
+      setIsAddDialogOpen(false);
+      resetForm();
+      toast({
+        title: "تم بنجاح",
+        description: "تم إضافة المصنع بنجاح",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "خطأ",
+        description: error.message || "فشل في إضافة المصنع",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<FactoryFormData> }) => {
+      const res = await apiRequest("PATCH", `/api/factories/${id}`, data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/factories"] });
+      setIsEditDialogOpen(false);
+      setSelectedFactory(null);
+      resetForm();
+      toast({
+        title: "تم بنجاح",
+        description: "تم تحديث المصنع بنجاح",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "خطأ",
+        description: error.message || "فشل في تحديث المصنع",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/factories/${id}`);
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/factories"] });
+      setIsDeleteDialogOpen(false);
+      setSelectedFactory(null);
+      toast({
+        title: "تم بنجاح",
+        description: "تم حذف المصنع بنجاح",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "خطأ",
+        description: error.message || "فشل في حذف المصنع",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      nameAr: "",
+      description: "",
+      descriptionAr: "",
+      wilaya: "",
+      category: "",
+      products: [""],
+      productsAr: [""],
+      phone: "",
+      email: "",
+      address: "",
+      addressAr: "",
+      logoUrl: "",
+      imageUrl: "",
+      latitude: "",
+      longitude: "",
+    });
+  };
+
+  const handleEdit = (factory: Factory) => {
+    setSelectedFactory(factory);
+    setFormData({
+      name: factory.name,
+      nameAr: factory.nameAr,
+      description: factory.description,
+      descriptionAr: factory.descriptionAr,
+      wilaya: factory.wilaya,
+      category: factory.category,
+      products: factory.products,
+      productsAr: factory.productsAr,
+      phone: factory.phone,
+      email: factory.email,
+      address: factory.address,
+      addressAr: factory.addressAr,
+      logoUrl: factory.logoUrl || "",
+      imageUrl: factory.imageUrl || "",
+      latitude: factory.latitude || "",
+      longitude: factory.longitude || "",
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (factory: Factory) => {
+    setSelectedFactory(factory);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanedData = {
+      ...formData,
+      products: formData.products.filter(p => p.trim() !== ""),
+      productsAr: formData.productsAr.filter(p => p.trim() !== ""),
+      logoUrl: formData.logoUrl || undefined,
+      imageUrl: formData.imageUrl || undefined,
+      latitude: formData.latitude || undefined,
+      longitude: formData.longitude || undefined,
+    };
+
+    if (selectedFactory) {
+      updateMutation.mutate({ id: selectedFactory.id, data: cleanedData });
+    } else {
+      createMutation.mutate(cleanedData);
+    }
+  };
+
+  const addProductField = () => {
+    setFormData(prev => ({
+      ...prev,
+      products: [...prev.products, ""],
+      productsAr: [...prev.productsAr, ""],
+    }));
+  };
+
+  const removeProductField = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      products: prev.products.filter((_, i) => i !== index),
+      productsAr: prev.productsAr.filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateProductField = (index: number, value: string, isArabic: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      [isArabic ? "productsAr" : "products"]: prev[isArabic ? "productsAr" : "products"].map((p, i) => 
+        i === index ? value : p
+      ),
+    }));
+  };
+
+  const filteredFactories = factories.filter(factory =>
+    factory.nameAr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    factory.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -90,12 +318,218 @@ export default function Admin() {
     );
   }
 
-  // todo: remove mock functionality
-  const mockFactories = [
-    { id: "1", nameAr: "مصنع زيت الزيتون", wilaya: "تيزي وزو", category: "food" },
-    { id: "2", nameAr: "مصنع النسيج", wilaya: "سطيف", category: "textile" },
-    { id: "3", nameAr: "مصنع الأدوية", wilaya: "قسنطينة", category: "pharmaceutical" },
-  ];
+  const FactoryFormDialog = ({ isOpen, onClose, title }: { isOpen: boolean; onClose: () => void; title: string }) => (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>
+            أدخل معلومات المصنع بالتفصيل
+          </DialogDescription>
+        </DialogHeader>
+        
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">الاسم بالعربية *</label>
+              <Input
+                required
+                value={formData.nameAr}
+                onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
+                placeholder="اسم المصنع"
+                data-testid="input-factory-name-ar"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">الاسم بالإنجليزية *</label>
+              <Input
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Factory Name"
+                data-testid="input-factory-name-en"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">الولاية *</label>
+              <Select
+                required
+                value={formData.wilaya}
+                onValueChange={(value) => setFormData({ ...formData, wilaya: value })}
+              >
+                <SelectTrigger data-testid="select-factory-wilaya">
+                  <SelectValue placeholder="اختر الولاية" />
+                </SelectTrigger>
+                <SelectContent>
+                  {wilayas.map((wilaya) => (
+                    <SelectItem key={wilaya} value={wilaya}>
+                      {wilaya}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">القطاع *</label>
+              <Select
+                required
+                value={formData.category}
+                onValueChange={(value) => setFormData({ ...formData, category: value })}
+              >
+                <SelectTrigger data-testid="select-factory-category">
+                  <SelectValue placeholder="اختر القطاع" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.nameAr}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">الوصف بالعربية *</label>
+              <Textarea
+                required
+                value={formData.descriptionAr}
+                onChange={(e) => setFormData({ ...formData, descriptionAr: e.target.value })}
+                placeholder="وصف المصنع ونشاطه..."
+                rows={4}
+                data-testid="textarea-factory-description-ar"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">الوصف بالإنجليزية *</label>
+              <Textarea
+                required
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Factory description..."
+                rows={4}
+                data-testid="textarea-factory-description-en"
+              />
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium">المنتجات *</label>
+              <Button type="button" size="sm" onClick={addProductField}>
+                <Plus className="w-4 h-4 ml-1" />
+                إضافة منتج
+              </Button>
+            </div>
+            <div className="space-y-2">
+              {formData.productsAr.map((_, index) => (
+                <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <Input
+                    value={formData.productsAr[index]}
+                    onChange={(e) => updateProductField(index, e.target.value, true)}
+                    placeholder="المنتج بالعربية"
+                    data-testid={`input-product-ar-${index}`}
+                  />
+                  <div className="flex gap-2">
+                    <Input
+                      value={formData.products[index]}
+                      onChange={(e) => updateProductField(index, e.target.value, false)}
+                      placeholder="Product in English"
+                      data-testid={`input-product-en-${index}`}
+                    />
+                    {formData.products.length > 1 && (
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => removeProductField(index)}
+                      >
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">الهاتف *</label>
+              <Input
+                required
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="+213 123 456 789"
+                data-testid="input-factory-phone"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">البريد الإلكتروني *</label>
+              <Input
+                required
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="info@factory.dz"
+                data-testid="input-factory-email"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">العنوان بالعربية *</label>
+              <Input
+                required
+                value={formData.addressAr}
+                onChange={(e) => setFormData({ ...formData, addressAr: e.target.value })}
+                placeholder="العنوان الكامل"
+                data-testid="input-factory-address-ar"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">العنوان بالإنجليزية *</label>
+              <Input
+                required
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                placeholder="Full address"
+                data-testid="input-factory-address-en"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                onClose();
+                resetForm();
+                setSelectedFactory(null);
+              }}
+              data-testid="button-cancel"
+            >
+              إلغاء
+            </Button>
+            <Button
+              type="submit"
+              disabled={createMutation.isPending || updateMutation.isPending}
+              data-testid="button-save-factory"
+            >
+              {(createMutation.isPending || updateMutation.isPending) ? "جاري الحفظ..." : "حفظ المصنع"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -120,7 +554,7 @@ export default function Admin() {
               <Building2 className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">500+</div>
+              <div className="text-2xl font-bold">{factories.length}</div>
               <p className="text-xs text-muted-foreground mt-1">مصنع مسجل</p>
             </CardContent>
           </Card>
@@ -131,7 +565,9 @@ export default function Admin() {
               <Building2 className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">48</div>
+              <div className="text-2xl font-bold">
+                {new Set(factories.map(f => f.wilaya)).size}
+              </div>
               <p className="text-xs text-muted-foreground mt-1">ولاية جزائرية</p>
             </CardContent>
           </Card>
@@ -142,7 +578,9 @@ export default function Admin() {
               <Building2 className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">8+</div>
+              <div className="text-2xl font-bold">
+                {new Set(factories.map(f => f.category)).size}
+              </div>
               <p className="text-xs text-muted-foreground mt-1">قطاع صناعي</p>
             </CardContent>
           </Card>
@@ -153,111 +591,13 @@ export default function Admin() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <CardTitle className="text-xl">قائمة المصانع</CardTitle>
               
-              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button data-testid="button-add-factory">
-                    <Plus className="w-4 h-4 ml-2" />
-                    إضافة مصنع جديد
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>إضافة مصنع جديد</DialogTitle>
-                    <DialogDescription>
-                      أدخل معلومات المصنع بالتفصيل
-                    </DialogDescription>
-                  </DialogHeader>
-                  
-                  <form className="space-y-4" onSubmit={(e) => {
-                    e.preventDefault();
-                    console.log('Factory added');
-                    setIsAddDialogOpen(false);
-                  }}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2">الاسم بالعربية</label>
-                        <Input placeholder="اسم المصنع" data-testid="input-factory-name-ar" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2">الاسم بالإنجليزية</label>
-                        <Input placeholder="Factory Name" data-testid="input-factory-name-en" />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2">الولاية</label>
-                        <Select>
-                          <SelectTrigger data-testid="select-factory-wilaya">
-                            <SelectValue placeholder="اختر الولاية" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {wilayas.map((wilaya) => (
-                              <SelectItem key={wilaya} value={wilaya}>
-                                {wilaya}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2">القطاع</label>
-                        <Select>
-                          <SelectTrigger data-testid="select-factory-category">
-                            <SelectValue placeholder="اختر القطاع" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {categories.map((category) => (
-                              <SelectItem key={category.id} value={category.id}>
-                                {category.nameAr}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">الوصف</label>
-                      <Textarea 
-                        placeholder="وصف المصنع ونشاطه..." 
-                        rows={4}
-                        data-testid="textarea-factory-description"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2">الهاتف</label>
-                        <Input placeholder="+213 123 456 789" data-testid="input-factory-phone" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2">البريد الإلكتروني</label>
-                        <Input type="email" placeholder="info@factory.dz" data-testid="input-factory-email" />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">العنوان</label>
-                      <Input placeholder="العنوان الكامل" data-testid="input-factory-address" />
-                    </div>
-
-                    <div className="flex justify-end gap-2 pt-4">
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={() => setIsAddDialogOpen(false)}
-                        data-testid="button-cancel"
-                      >
-                        إلغاء
-                      </Button>
-                      <Button type="submit" data-testid="button-save-factory">
-                        حفظ المصنع
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
+              <Button onClick={() => {
+                resetForm();
+                setIsAddDialogOpen(true);
+              }} data-testid="button-add-factory">
+                <Plus className="w-4 h-4 ml-2" />
+                إضافة مصنع جديد
+              </Button>
             </div>
           </CardHeader>
           <CardContent>
@@ -274,54 +614,105 @@ export default function Admin() {
               </div>
             </div>
 
-            <div className="border rounded-md">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b bg-muted/50">
-                      <th className="text-right p-4 font-medium">الاسم</th>
-                      <th className="text-right p-4 font-medium">الولاية</th>
-                      <th className="text-right p-4 font-medium">القطاع</th>
-                      <th className="text-center p-4 font-medium">الإجراءات</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {mockFactories.map((factory) => (
-                      <tr key={factory.id} className="border-b hover-elevate">
-                        <td className="p-4 text-foreground">{factory.nameAr}</td>
-                        <td className="p-4 text-muted-foreground">{factory.wilaya}</td>
-                        <td className="p-4 text-muted-foreground">
-                          {categories.find(c => c.id === factory.category)?.nameAr}
-                        </td>
-                        <td className="p-4">
-                          <div className="flex justify-center gap-2">
-                            <Button 
-                              size="icon" 
-                              variant="ghost"
-                              onClick={() => console.log('Edit', factory.id)}
-                              data-testid={`button-edit-${factory.id}`}
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button 
-                              size="icon" 
-                              variant="ghost"
-                              onClick={() => console.log('Delete', factory.id)}
-                              data-testid={`button-delete-${factory.id}`}
-                            >
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            {isLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">جاري تحميل المصانع...</p>
               </div>
-            </div>
+            ) : filteredFactories.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">لا توجد مصانع مسجلة</p>
+              </div>
+            ) : (
+              <div className="border rounded-md">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b bg-muted/50">
+                        <th className="text-right p-4 font-medium">الاسم</th>
+                        <th className="text-right p-4 font-medium">الولاية</th>
+                        <th className="text-right p-4 font-medium">القطاع</th>
+                        <th className="text-center p-4 font-medium">الإجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredFactories.map((factory) => (
+                        <tr key={factory.id} className="border-b hover-elevate">
+                          <td className="p-4 text-foreground">{factory.nameAr}</td>
+                          <td className="p-4 text-muted-foreground">{factory.wilaya}</td>
+                          <td className="p-4 text-muted-foreground">
+                            {categories.find(c => c.id === factory.category)?.nameAr}
+                          </td>
+                          <td className="p-4">
+                            <div className="flex justify-center gap-2">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleEdit(factory)}
+                                data-testid={`button-edit-${factory.id}`}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleDelete(factory)}
+                                data-testid={`button-delete-${factory.id}`}
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </section>
+
+      <FactoryFormDialog
+        isOpen={isAddDialogOpen}
+        onClose={() => {
+          setIsAddDialogOpen(false);
+          resetForm();
+        }}
+        title="إضافة مصنع جديد"
+      />
+
+      <FactoryFormDialog
+        isOpen={isEditDialogOpen}
+        onClose={() => {
+          setIsEditDialogOpen(false);
+          setSelectedFactory(null);
+          resetForm();
+        }}
+        title="تعديل المصنع"
+      />
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
+            <AlertDialogDescription>
+              سيتم حذف المصنع "{selectedFactory?.nameAr}" نهائياً. لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => selectedFactory && deleteMutation.mutate(selectedFactory.id)}
+              disabled={deleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? "جاري الحذف..." : "حذف"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Footer />
     </div>
