@@ -28,29 +28,13 @@ CREATE TABLE IF NOT EXISTS factories (
   logo_url TEXT,
   image_url TEXT,
   latitude TEXT,
-  longitude TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+  longitude TEXT
 );
 
 -- إنشاء فهرس للبحث السريع
 CREATE INDEX IF NOT EXISTS idx_factories_wilaya ON factories(wilaya);
 CREATE INDEX IF NOT EXISTS idx_factories_category ON factories(category);
 CREATE INDEX IF NOT EXISTS idx_factories_name_ar ON factories(name_ar);
-
--- إنشاء trigger لتحديث updated_at تلقائياً
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = CURRENT_TIMESTAMP;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER update_factories_updated_at
-  BEFORE UPDATE ON factories
-  FOR EACH ROW
-  EXECUTE FUNCTION update_updated_at_column();
 
 -- =======================================================
 -- إضافة بيانات تجريبية (اختياري)
