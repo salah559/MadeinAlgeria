@@ -12,10 +12,10 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/">
           <div className="flex items-center gap-3 hover-elevate active-elevate-2 px-3 py-2 rounded-md cursor-pointer" data-testid="link-home">
-            <img src={logoImage} alt="Made in Algeria Logo" className="h-14 w-auto" />
+            <img src={logoImage} alt="Made in Algeria Logo" className="h-16 w-auto" />
             <div className="flex flex-col">
-              <span className="text-lg font-bold text-foreground leading-tight">Made in Algeria</span>
-              <span className="text-sm text-muted-foreground leading-tight">صنع في الجزائر</span>
+              <span className="text-xl font-bold text-foreground leading-tight">Made in Algeria</span>
+              <span className="text-base text-muted-foreground leading-tight">صنع في الجزائر</span>
             </div>
           </div>
         </Link>
