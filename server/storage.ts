@@ -1,38 +1,81 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { drizzle } from "drizzle-orm/neon-serverless";
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import { type Factory, type InsertFactory, factories } from "@shared/schema";
+import { eq, ilike, or, and } from "drizzle-orm";
+import ws from "ws";
 
-// modify the interface with any CRUD methods
-// you might need
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is not set");
+}
+
+neonConfig.webSocketConstructor = ws;
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+export const db = drizzle({ client: pool });
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getFactories(searchQuery?: string, wilaya?: string, category?: string): Promise<Factory[]>;
+  getFactory(id: string): Promise<Factory | undefined>;
+  createFactory(factory: InsertFactory): Promise<Factory>;
+  updateFactory(id: string, factory: Partial<InsertFactory>): Promise<Factory | undefined>;
+  deleteFactory(id: string): Promise<boolean>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DbStorage implements IStorage {
+  async getFactories(searchQuery?: string, wilaya?: string, category?: string): Promise<Factory[]> {
+    const conditions = [];
+    
+    if (searchQuery) {
+      conditions.push(
+        or(
+          ilike(factories.nameAr, `%${searchQuery}%`),
+          ilike(factories.name, `%${searchQuery}%`),
+          ilike(factories.descriptionAr, `%${searchQuery}%`)
+        )!
+      );
+    }
+    
+    if (wilaya) {
+      conditions.push(eq(factories.wilaya, wilaya));
+    }
+    
+    if (category) {
+      conditions.push(eq(factories.category, category));
+    }
+    
+    if (conditions.length === 0) {
+      return await db.select().from(factories);
+    }
+    
+    if (conditions.length === 1) {
+      return await db.select().from(factories).where(conditions[0]);
+    }
+    
+    return await db.select().from(factories).where(and(...conditions));
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getFactory(id: string): Promise<Factory | undefined> {
+    const result = await db.select().from(factories).where(eq(factories.id, id));
+    return result[0];
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createFactory(factory: InsertFactory): Promise<Factory> {
+    const result = await db.insert(factories).values(factory).returning();
+    return result[0];
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async updateFactory(id: string, factory: Partial<InsertFactory>): Promise<Factory | undefined> {
+    const result = await db
+      .update(factories)
+      .set({ ...factory, updatedAt: new Date() })
+      .where(eq(factories.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteFactory(id: string): Promise<boolean> {
+    const result = await db.delete(factories).where(eq(factories.id, id)).returning();
+    return result.length > 0;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DbStorage();
