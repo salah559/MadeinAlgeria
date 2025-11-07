@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import SearchFilter from "@/components/SearchFilter";
@@ -75,6 +76,7 @@ const mockFactories = [
 ];
 
 export default function Home() {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedWilaya, setSelectedWilaya] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -108,9 +110,9 @@ export default function Home() {
       
       <section className="max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2 text-foreground">المصانع المتاحة</h2>
+          <h2 className="text-3xl font-bold mb-2 text-foreground">{t.factory.availableFactories}</h2>
           <p className="text-muted-foreground">
-            {filteredFactories.length} مصنع متاح
+            {filteredFactories.length} {t.factory.factoriesCount}
           </p>
         </div>
         <FactoryGrid factories={filteredFactories} />

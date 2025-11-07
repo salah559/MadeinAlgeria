@@ -47,6 +47,8 @@ export const translations = {
       website: "الموقع الإلكتروني",
       email: "البريد الإلكتروني",
       phone: "الهاتف",
+      availableFactories: "المصانع المتاحة",
+      factoriesCount: "مصنع متاح",
     },
     footer: {
       quickLinks: "روابط سريعة",
@@ -143,6 +145,8 @@ export const translations = {
       website: "Website",
       email: "Email",
       phone: "Phone",
+      availableFactories: "Available Factories",
+      factoriesCount: "factories available",
     },
     footer: {
       quickLinks: "Quick Links",
@@ -239,6 +243,8 @@ export const translations = {
       website: "Site web",
       email: "Email",
       phone: "Téléphone",
+      availableFactories: "Usines disponibles",
+      factoriesCount: "usines disponibles",
     },
     footer: {
       quickLinks: "Liens rapides",
