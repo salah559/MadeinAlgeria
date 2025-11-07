@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,14 +18,77 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Building2, Plus, Edit, Trash2, Search } from "lucide-react";
+import { Building2, Plus, Edit, Trash2, Search, ShieldAlert } from "lucide-react";
 import { wilayas, categories } from "@/lib/data";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link, useLocation } from "wouter";
+
+const ALLOWED_ADMIN_EMAILS = [
+  "bouazzasalah120120@gmail.com",
+  "madimoh44@gmail.com"
+];
 
 export default function Admin() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const { user, loading } = useAuth();
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      setLocation("/login");
+    }
+  }, [user, loading, setLocation]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">جاري التحميل...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const isAdmin = user.email && ALLOWED_ADMIN_EMAILS.includes(user.email);
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-1 flex items-center justify-center px-4">
+          <Card className="max-w-md w-full">
+            <CardContent className="pt-6">
+              <div className="text-center space-y-4">
+                <div className="flex justify-center">
+                  <ShieldAlert className="w-16 h-16 text-destructive" />
+                </div>
+                <h2 className="text-2xl font-bold text-foreground">غير مصرح بالدخول</h2>
+                <p className="text-muted-foreground">
+                  عذراً، هذه الصفحة مخصصة للمسؤولين فقط. ليس لديك صلاحية للوصول إلى لوحة التحكم.
+                </p>
+                <div className="pt-4">
+                  <Link href="/">
+                    <Button data-testid="button-back-home">
+                      العودة إلى الصفحة الرئيسية
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   // todo: remove mock functionality
   const mockFactories = [
