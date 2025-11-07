@@ -16,3 +16,30 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+export const factories = pgTable("factories", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  nameAr: text("name_ar").notNull(),
+  description: text("description").notNull(),
+  descriptionAr: text("description_ar").notNull(),
+  wilaya: text("wilaya").notNull(),
+  category: text("category").notNull(),
+  products: text("products").array().notNull(),
+  productsAr: text("products_ar").array().notNull(),
+  phone: text("phone").notNull(),
+  email: text("email").notNull(),
+  address: text("address").notNull(),
+  addressAr: text("address_ar").notNull(),
+  logoUrl: text("logo_url"),
+  imageUrl: text("image_url"),
+  latitude: text("latitude"),
+  longitude: text("longitude"),
+});
+
+export const insertFactorySchema = createInsertSchema(factories).omit({
+  id: true,
+});
+
+export type InsertFactory = z.infer<typeof insertFactorySchema>;
+export type Factory = typeof factories.$inferSelect;
