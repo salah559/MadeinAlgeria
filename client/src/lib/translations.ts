@@ -71,6 +71,8 @@ export const translations = {
       mechanical: "الصناعات الميكانيكية",
       electronic: "الصناعات الإلكترونية",
       construction: "مواد البناء",
+      pharmaceutical: "الصناعات الصيدلانية",
+      automotive: "صناعة السيارات",
     },
     about: {
       title: "من نحن",
@@ -169,6 +171,8 @@ export const translations = {
       mechanical: "Mechanical Industry",
       electronic: "Electronics Industry",
       construction: "Construction Materials",
+      pharmaceutical: "Pharmaceutical Industry",
+      automotive: "Automotive Industry",
     },
     about: {
       title: "About Us",
@@ -267,6 +271,8 @@ export const translations = {
       mechanical: "Industrie mécanique",
       electronic: "Industrie électronique",
       construction: "Matériaux de construction",
+      pharmaceutical: "Industrie pharmaceutique",
+      automotive: "Industrie automobile",
     },
     about: {
       title: "À propos de nous",

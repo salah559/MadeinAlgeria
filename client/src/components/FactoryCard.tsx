@@ -29,7 +29,7 @@ export default function FactoryCard({
   const { t, language } = useLanguage();
 
   const displayName = language === 'ar' ? nameAr : name;
-  const displayCategory = categoryAr;
+  const displayCategory = t.categories[category as keyof typeof t.categories] || categoryAr;
 
   return (
     <Card className="overflow-hidden hover-elevate active-elevate-2 transition-all" data-testid={`card-factory-${id}`}>
