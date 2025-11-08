@@ -47,12 +47,26 @@
      ```
 4. احفظ `Client ID` و `Client Secret`
 
-### 4. متغيرات البيئة (Environment Variables)
+### 4. إضافة Neon Database في Vercel
 
-أضف المتغيرات التالية في قسم **Environment Variables**:
+بدلاً من إضافة `DATABASE_URL` يدويًا، استخدم تكامل Vercel مع Neon:
+
+1. في صفحة إعدادات المشروع في Vercel، اذهب إلى تبويب **Storage**
+2. اضغط على **Connect Store**
+3. اختر **Neon Postgres**
+4. اتبع التعليمات لإنشاء أو ربط قاعدة بيانات Neon
+5. Vercel سيضيف `DATABASE_URL` تلقائيًا في Environment Variables ✅
+
+**فائدة هذه الطريقة:**
+- ✅ لا حاجة لنسخ `DATABASE_URL` يدويًا
+- ✅ Vercel يدير الاتصال تلقائيًا
+- ✅ متغيرات البيئة تُضاف تلقائيًا لجميع البيئات (Production, Preview, Development)
+
+### 5. إضافة باقي متغيرات البيئة
+
+الآن أضف المتغيرات المتبقية يدويًا في **Environment Variables**:
 
 ```
-DATABASE_URL=your_neon_database_url_here
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 SESSION_SECRET=random_secure_string_minimum_32_characters
@@ -60,29 +74,69 @@ NODE_ENV=production
 ```
 
 **ملاحظات مهمة**: 
-- احصل على `DATABASE_URL` من لوحة تحكم Neon Database
-- تأكد من أن Connection String يدعم WebSockets (يبدأ بـ `postgresql://`)
-- `SESSION_SECRET` يجب أن يكون نصًا عشوائيًا طويلاً وآمنًا
+- `SESSION_SECRET` يجب أن يكون نصًا عشوائيًا طويلاً وآمنًا (32 حرف على الأقل)
 - `GOOGLE_CLIENT_ID` و `GOOGLE_CLIENT_SECRET` من Google Cloud Console
 
-### 5. إنشاء الجداول في قاعدة البيانات
+### 6. إنشاء الجداول في قاعدة البيانات
 
-قبل النشر، يجب إنشاء الجداول:
+بعد ربط Neon Database وإضافة Environment Variables، يمكنك إنشاء الجداول بطريقتين:
 
+#### الطريقة 1: من خلال Neon Dashboard (الأسهل)
+1. اذهب إلى [Neon Console](https://console.neon.tech/)
+2. افتح قاعدة البيانات المرتبطة بـ Vercel
+3. اذهب إلى **SQL Editor**
+4. قم بتشغيل الكود التالي:
+
+```sql
+CREATE TABLE users (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL UNIQUE,
+  name TEXT,
+  google_id TEXT UNIQUE,
+  picture TEXT,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+CREATE TABLE factories (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  name_ar TEXT NOT NULL,
+  description TEXT NOT NULL,
+  description_ar TEXT NOT NULL,
+  wilaya TEXT NOT NULL,
+  category TEXT NOT NULL,
+  products TEXT[] NOT NULL,
+  products_ar TEXT[] NOT NULL,
+  phone TEXT NOT NULL,
+  email TEXT NOT NULL,
+  address TEXT NOT NULL,
+  address_ar TEXT NOT NULL,
+  logo_url TEXT,
+  image_url TEXT,
+  latitude TEXT,
+  longitude TEXT
+);
+
+CREATE TABLE session (
+  sid VARCHAR PRIMARY KEY,
+  sess TEXT NOT NULL,
+  expire TIMESTAMP NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_session_expire ON session(expire);
+```
+
+#### الطريقة 2: باستخدام Drizzle محليًا
 ```bash
-# أضف DATABASE_URL في ملف .env محليًا
+# احصل على DATABASE_URL من Vercel Environment Variables
+# أضفه في ملف .env محلي
 echo "DATABASE_URL=your_neon_connection_string" > .env
 
 # قم بإنشاء الجداول
 npm run db:push
 ```
 
-هذا سينشئ الجداول التالية:
-- `users` - بيانات المستخدمين
-- `factories` - بيانات المصانع
-- `session` - جلسات تسجيل الدخول
-
-### 6. انقر على Deploy
+### 7. انقر على Deploy
 
 بعد إضافة جميع الإعدادات، انقر على **"Deploy"**
 
