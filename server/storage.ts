@@ -2,13 +2,23 @@ import { drizzle } from "drizzle-orm/neon-serverless";
 import { Pool, neonConfig } from "@neondatabase/serverless";
 import { type Factory, type InsertFactory, factories, type User, type InsertUser, users } from "@shared/schema";
 import { eq, ilike, or, and } from "drizzle-orm";
-import ws from "ws";
 
 if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL environment variable is not set");
 }
 
-neonConfig.webSocketConstructor = ws;
+// تكوين Neon للعمل في Vercel Serverless
+// في Vercel: استخدام fetch mode (أسرع وأكثر استقرارًا)
+// في التطوير: استخدام WebSocket للاتصال المستمر
+if (process.env.VERCEL) {
+  neonConfig.fetchConnectionCache = true;
+} else {
+  // فقط في بيئة التطوير
+  import("ws").then((ws) => {
+    neonConfig.webSocketConstructor = ws.default;
+  });
+}
+
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 export const db = drizzle({ client: pool });
 

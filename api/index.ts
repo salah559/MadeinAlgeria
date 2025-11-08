@@ -6,9 +6,9 @@ import passport from "../server/auth";
 import { storage } from "../server/storage";
 import { insertFactorySchema } from "../shared/schema";
 import { fromError } from "zod-validation-error";
-import ws from "ws";
 
-neonConfig.webSocketConstructor = ws;
+// تعطيل WebSocket في Vercel - استخدام fetch mode
+neonConfig.fetchConnectionCache = true;
 
 const app = express();
 const PgSession = connectPgSimple(session);
