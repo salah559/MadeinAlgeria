@@ -12,7 +12,15 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/api/factories", async (req, res) => {
+app.options("*", (_req, res) => {
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
+  res.setHeader("Access-Control-Allow-Headers", "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version");
+  res.status(200).end();
+});
+
+app.get("/factories", async (req, res) => {
   try {
     const { search, wilaya, category } = req.query;
     const factories = await storage.getFactories(
@@ -27,7 +35,7 @@ app.get("/api/factories", async (req, res) => {
   }
 });
 
-app.get("/api/factories/:id", async (req, res) => {
+app.get("/factories/:id", async (req, res) => {
   try {
     const factory = await storage.getFactory(req.params.id);
     if (!factory) {
@@ -40,7 +48,7 @@ app.get("/api/factories/:id", async (req, res) => {
   }
 });
 
-app.post("/api/factories", async (req, res) => {
+app.post("/factories", async (req, res) => {
   try {
     const validatedData = insertFactorySchema.parse(req.body);
     const factory = await storage.createFactory(validatedData);
@@ -55,7 +63,7 @@ app.post("/api/factories", async (req, res) => {
   }
 });
 
-app.patch("/api/factories/:id", async (req, res) => {
+app.patch("/factories/:id", async (req, res) => {
   try {
     const partialSchema = insertFactorySchema.partial();
     const validatedData = partialSchema.parse(req.body);
@@ -74,7 +82,7 @@ app.patch("/api/factories/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/factories/:id", async (req, res) => {
+app.delete("/factories/:id", async (req, res) => {
   try {
     const success = await storage.deleteFactory(req.params.id);
     if (!success) {
