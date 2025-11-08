@@ -1,8 +1,7 @@
 import { Link } from "wouter";
-import { Menu, LogOut, User, Languages } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   DropdownMenu,
@@ -12,20 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logoImage from "@assets/IMG_20251107_233735_1762555070356.png";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, signOut, loading } = useAuth();
   const { language, setLanguage, t } = useLanguage();
-
-  const getUserInitials = () => {
-    if (user?.email) {
-      return user.email.substring(0, 2).toUpperCase();
-    }
-    return "U";
-  };
 
   const languages = [
     { code: 'ar' as const, label: 'العربية', flag: '🇩🇿' },
@@ -65,6 +55,11 @@ export default function Header() {
               {t.nav.contact}
             </Button>
           </Link>
+          <Link href="/admin">
+            <Button variant="ghost" size="sm" data-testid="button-nav-admin">
+              {t.nav.admin}
+            </Button>
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -91,51 +86,6 @@ export default function Header() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {!loading && (
-            user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full" data-testid="button-user-menu">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email} />
-                      <AvatarFallback>{getUserInitials()}</AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{t.nav.profile}</p>
-                      <p className="text-xs leading-none text-muted-foreground" data-testid="text-user-email">
-                        {user.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                      <div className="flex items-center w-full cursor-pointer" data-testid="link-admin">
-                        <User className="ml-2 h-4 w-4" />
-                        <span>{t.nav.admin}</span>
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={signOut} data-testid="button-logout">
-                    <LogOut className="ml-2 h-4 w-4" />
-                    <span>{t.nav.logout}</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link href="/login">
-                <Button variant="default" size="sm" data-testid="button-login">
-                  {t.nav.login}
-                </Button>
-              </Link>
-            )
-          )}
           
           <Button 
             variant="ghost" 
@@ -172,31 +122,11 @@ export default function Header() {
                 {t.nav.contact}
               </Button>
             </Link>
-            {!loading && (
-              user ? (
-                <>
-                  <Link href="/admin">
-                    <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-admin">
-                      {t.nav.admin}
-                    </Button>
-                  </Link>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start" 
-                    onClick={signOut}
-                    data-testid="button-mobile-logout"
-                  >
-                    {t.nav.logout}
-                  </Button>
-                </>
-              ) : (
-                <Link href="/login">
-                  <Button variant="default" className="w-full" data-testid="button-mobile-login">
-                    {t.nav.login}
-                  </Button>
-                </Link>
-              )
-            )}
+            <Link href="/admin">
+              <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-admin">
+                {t.nav.admin}
+              </Button>
+            </Link>
           </nav>
         </div>
       )}
