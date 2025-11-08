@@ -30,14 +30,14 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
+      <LanguageProvider>
         <AuthProvider>
-          <LanguageProvider>
+          <TooltipProvider>
             <Toaster />
             <Router />
-          </LanguageProvider>
+          </TooltipProvider>
         </AuthProvider>
-      </TooltipProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
