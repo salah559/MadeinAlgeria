@@ -125,6 +125,13 @@ Vercel سيقوم بـ:
 3. أضف الدومين الخاص بك
 4. اتبع التعليمات لتحديث DNS
 
+## ملاحظات تقنية مهمة
+
+- **أمر البناء**: `npm run build` يبني Frontend فقط باستخدام Vite. ملف `api/index.ts` يُعامل تلقائياً كـ serverless function من Vercel.
+- **مسارات API**: جميع المسارات في `api/index.ts` **لا تحتوي** على بادئة `/api` (مثل `app.get("/factories")` بدلاً من `app.get("/api/factories")`) لأن Vercel يضيفها تلقائياً.
+- **CORS**: مُعد بشكل صحيح في `vercel.json` مع معالج OPTIONS في `api/index.ts`.
+- **الملفات المستبعدة**: `.vercelignore` يستبعد الملفات غير الضرورية من النشر.
+
 ## الدعم
 
 إذا واجهت مشاكل:
