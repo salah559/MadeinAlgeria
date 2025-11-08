@@ -28,13 +28,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Building2, Plus, Edit, Trash2, Search } from "lucide-react";
+import { Building2, Plus, Edit, Trash2, Search, Lock } from "lucide-react";
 import { wilayas, categories } from "@/lib/data";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { SiGoogle } from "react-icons/si";
 import type { Factory } from "@shared/schema";
 
 type FactoryFormData = {
@@ -63,6 +65,78 @@ export default function Admin() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedFactory, setSelectedFactory] = useState<Factory | null>(null);
   const { toast } = useToast();
+  const { user, isAdmin, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-muted-foreground">جاري التحميل...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center p-4">
+          <Card className="max-w-md w-full">
+            <CardHeader className="text-center">
+              <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <CardTitle className="text-2xl">تسجيل الدخول مطلوب</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <p className="text-muted-foreground">
+                يجب تسجيل الدخول للوصول إلى لوحة التحكم
+              </p>
+              <Button 
+                variant="default" 
+                size="lg" 
+                className="gap-2 w-full"
+                onClick={() => window.location.href = "/api/auth/google"}
+                data-testid="button-admin-login"
+              >
+                <SiGoogle className="h-5 w-5" />
+                تسجيل الدخول بواسطة Google
+              </Button>
+            </CardContent>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center p-4">
+          <Card className="max-w-md w-full">
+            <CardHeader className="text-center">
+              <Lock className="h-12 w-12 mx-auto mb-4 text-destructive" />
+              <CardTitle className="text-2xl">الوصول مرفوض</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <p className="text-muted-foreground">
+                عذراً، ليس لديك صلاحية الوصول إلى لوحة التحكم.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                مسجل الدخول: {user.email}
+              </p>
+            </CardContent>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const [formData, setFormData] = useState<FactoryFormData>({
     name: "",
@@ -83,7 +157,7 @@ export default function Admin() {
     longitude: "",
   });
 
-  const { data: factories = [], isLoading } = useQuery<Factory[]>({
+  const { data: factories = [], isLoading: isLoadingFactories } = useQuery<Factory[]>({
     queryKey: ["/api/factories"],
   });
 
@@ -551,7 +625,7 @@ export default function Admin() {
               </div>
             </div>
 
-            {isLoading ? (
+            {isLoadingFactories ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
                 <p className="text-muted-foreground">جاري تحميل المصانع...</p>

@@ -1,8 +1,10 @@
 import { Link } from "wouter";
-import { Menu } from "lucide-react";
+import { Menu, LogIn, LogOut, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { SiGoogle } from "react-icons/si";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,11 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logoImage from "@assets/IMG_20251107_233735_1762555070356.png";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const { user, isAdmin, logout } = useAuth();
 
   const languages = [
     { code: 'ar' as const, label: 'العربية', flag: '🇩🇿' },
@@ -55,14 +59,57 @@ export default function Header() {
               {t.nav.contact}
             </Button>
           </Link>
-          <Link href="/admin">
-            <Button variant="ghost" size="sm" data-testid="button-nav-admin">
-              {t.nav.admin}
-            </Button>
-          </Link>
+          {isAdmin && (
+            <Link href="/admin">
+              <Button variant="ghost" size="sm" data-testid="button-nav-admin">
+                {t.nav.admin}
+              </Button>
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2" data-testid="button-user-menu">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={user.picture || undefined} alt={user.name || user.email} />
+                    <AvatarFallback>
+                      <UserIcon className="h-4 w-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="hidden md:inline">{user.name || user.email}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[200px]">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium">{user.name || "User"}</span>
+                    <span className="text-xs text-muted-foreground">{user.email}</span>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout} data-testid="button-logout">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>تسجيل الخروج / Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button 
+              variant="default" 
+              size="sm" 
+              className="gap-2"
+              onClick={() => window.location.href = "/api/auth/google"}
+              data-testid="button-google-login"
+            >
+              <SiGoogle className="h-4 w-4" />
+              <span className="hidden md:inline">تسجيل الدخول / Login</span>
+              <span className="md:hidden"><LogIn className="h-4 w-4" /></span>
+            </Button>
+          )}
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="gap-2 min-w-[120px] justify-start" data-testid="button-language">
