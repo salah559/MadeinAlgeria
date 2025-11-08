@@ -29,20 +29,60 @@
 #### Root Directory
 - اتركها كما هي: `./` (الجذر)
 
-### 3. متغيرات البيئة (Environment Variables)
+### 3. Google OAuth Setup
+
+قبل النشر، يجب إعداد Google OAuth:
+
+1. اذهب إلى [Google Cloud Console](https://console.cloud.google.com/)
+2. انتقل إلى **APIs & Services** > **Credentials**
+3. أنشئ **OAuth 2.0 Client ID**:
+   - نوع التطبيق: **Web application**
+   - Authorized JavaScript origins:
+     ```
+     https://your-project-name.vercel.app
+     ```
+   - Authorized redirect URIs:
+     ```
+     https://your-project-name.vercel.app/api/auth/google/callback
+     ```
+4. احفظ `Client ID` و `Client Secret`
+
+### 4. متغيرات البيئة (Environment Variables)
 
 أضف المتغيرات التالية في قسم **Environment Variables**:
 
 ```
 DATABASE_URL=your_neon_database_url_here
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+SESSION_SECRET=random_secure_string_minimum_32_characters
 NODE_ENV=production
 ```
 
-**ملاحظة مهمة**: 
+**ملاحظات مهمة**: 
 - احصل على `DATABASE_URL` من لوحة تحكم Neon Database
 - تأكد من أن Connection String يدعم WebSockets (يبدأ بـ `postgresql://`)
+- `SESSION_SECRET` يجب أن يكون نصًا عشوائيًا طويلاً وآمنًا
+- `GOOGLE_CLIENT_ID` و `GOOGLE_CLIENT_SECRET` من Google Cloud Console
 
-### 4. انقر على Deploy
+### 5. إنشاء الجداول في قاعدة البيانات
+
+قبل النشر، يجب إنشاء الجداول:
+
+```bash
+# أضف DATABASE_URL في ملف .env محليًا
+echo "DATABASE_URL=your_neon_connection_string" > .env
+
+# قم بإنشاء الجداول
+npm run db:push
+```
+
+هذا سينشئ الجداول التالية:
+- `users` - بيانات المستخدمين
+- `factories` - بيانات المصانع
+- `session` - جلسات تسجيل الدخول
+
+### 6. انقر على Deploy
 
 بعد إضافة جميع الإعدادات، انقر على **"Deploy"**
 
@@ -52,7 +92,7 @@ Vercel سيقوم بـ:
 3. نشر الـ API كـ Serverless Functions
 4. نشر Frontend كـ Static Files
 
-### 5. بعد النشر
+### 7. بعد النشر
 
 بعد اكتمال النشر:
 - ستحصل على رابط مثل: `https://your-project.vercel.app`
@@ -78,12 +118,20 @@ Vercel سيقوم بـ:
 
 ## المسارات (Routes)
 
-جميع مسارات API تبدأ بـ `/api`:
-- `GET /api/factories` - جلب جميع المصانع
-- `GET /api/factories/:id` - جلب مصنع واحد
-- `POST /api/factories` - إنشاء مصنع جديد
-- `PATCH /api/factories/:id` - تحديث مصنع
-- `DELETE /api/factories/:id` - حذف مصنع
+### مسارات المصادقة:
+- `GET /api/auth/google` - بدء تسجيل الدخول عبر Google
+- `GET /api/auth/google/callback` - معالجة العودة من Google
+- `GET /api/auth/user` - الحصول على بيانات المستخدم الحالي
+- `POST /api/auth/logout` - تسجيل الخروج
+
+### مسارات المصانع:
+- `GET /api/factories` - جلب جميع المصانع (عام)
+- `GET /api/factories/:id` - جلب مصنع واحد (عام)
+- `POST /api/factories` - إنشاء مصنع جديد (المسؤول فقط)
+- `PATCH /api/factories/:id` - تحديث مصنع (المسؤول فقط)
+- `DELETE /api/factories/:id` - حذف مصنع (المسؤول فقط)
+
+**ملاحظة**: المسؤول الوحيد هو `bouazzasalah120120@gmail.com`
 
 ## الملفات المهمة
 
@@ -104,6 +152,20 @@ Vercel سيقوم بـ:
 - تحقق من أن `DATABASE_URL` صحيح
 - تحقق من أن قاعدة البيانات تحتوي على الجداول اللازمة
 - قم بتشغيل `npm run db:push` محلياً أولاً للتأكد من المخطط
+
+### خطأ Google OAuth 403
+
+إذا ظهر "403. Il s'agit d'une erreur" من Google:
+1. تحقق من إضافة Redirect URI الصحيح في Google Cloud Console
+2. يجب أن يكون بالضبط: `https://your-app.vercel.app/api/auth/google/callback`
+3. انتظر 5 دقائق بعد إضافة Redirect URI (قد يستغرق بعض الوقت للتفعيل)
+4. تأكد من أن `GOOGLE_CLIENT_ID` و `GOOGLE_CLIENT_SECRET` صحيحين
+
+### لا تعمل الجلسات (Sessions)
+
+- تأكد من إضافة `SESSION_SECRET` في Environment Variables
+- تحقق من أن جدول `session` موجود في Neon
+- امسح الـ cookies وحاول مرة أخرى
 
 ### CORS Errors
 

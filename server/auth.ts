@@ -13,10 +13,20 @@ if (!isGoogleAuthConfigured) {
   console.warn("   Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to enable Google login.");
 }
 
-const REPLIT_DOMAIN = process.env.REPLIT_DOMAINS?.split(',')[0] || 'localhost:5000';
-const CALLBACK_URL = REPLIT_DOMAIN.includes('localhost')
-  ? `http://${REPLIT_DOMAIN}/api/auth/google/callback`
-  : `https://${REPLIT_DOMAIN}/api/auth/google/callback`;
+const getCallbackUrl = () => {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}/api/auth/google/callback`;
+  }
+  
+  const replitDomain = process.env.REPLIT_DOMAINS?.split(',')[0];
+  if (replitDomain) {
+    return `https://${replitDomain}/api/auth/google/callback`;
+  }
+  
+  return "http://localhost:5000/api/auth/google/callback";
+};
+
+const CALLBACK_URL = getCallbackUrl();
 
 if (isGoogleAuthConfigured) {
   passport.use(

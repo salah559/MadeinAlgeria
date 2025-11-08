@@ -46,3 +46,11 @@ export const insertFactorySchema = createInsertSchema(factories).omit({
 
 export type InsertFactory = z.infer<typeof insertFactorySchema>;
 export type Factory = typeof factories.$inferSelect;
+
+export const sessions = pgTable("session", {
+  sid: varchar("sid").primaryKey(),
+  sess: text("sess").notNull(),
+  expire: timestamp("expire", { mode: 'date' }).notNull(),
+});
+
+export type Session = typeof sessions.$inferSelect;
