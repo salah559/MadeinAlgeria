@@ -2,14 +2,17 @@ import { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import SearchFilter from "@/components/SearchFilter";
 import FactoryGrid from "@/components/FactoryGrid";
+import AlgeriaMap from "@/components/AlgeriaMap";
 import Footer from "@/components/Footer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Grid3X3, Map } from "lucide-react";
+import { useLocation } from "wouter";
 import foodFactoryImage from "@assets/generated_images/Food_processing_factory_Algeria_948f6d0a.png";
 import textileFactoryImage from "@assets/generated_images/Textile_factory_Algeria_9b983e89.png";
 import pharmaFactoryImage from "@assets/generated_images/Pharmaceutical_factory_Algeria_853de564.png";
 import automotiveFactoryImage from "@assets/generated_images/Automotive_factory_Algeria_61d5bf78.png";
 import electronicsFactoryImage from "@assets/generated_images/Electronics_factory_Algeria_81f5e0be.png";
 
-// todo: remove mock functionality
 const mockFactories = [
   {
     id: "1",
@@ -20,6 +23,8 @@ const mockFactories = [
     categoryAr: "الصناعات الغذائية",
     imageUrl: foodFactoryImage,
     products: ["زيت الزيتون", "الزيتون المعلب", "المخللات"],
+    latitude: "36.7167",
+    longitude: "4.0500",
   },
   {
     id: "2",
@@ -30,6 +35,8 @@ const mockFactories = [
     categoryAr: "الصناعات النسيجية",
     imageUrl: textileFactoryImage,
     products: ["أقمشة قطنية", "ملابس جاهزة", "منسوجات منزلية"],
+    latitude: "36.1909",
+    longitude: "5.4143",
   },
   {
     id: "3",
@@ -40,6 +47,8 @@ const mockFactories = [
     categoryAr: "الصناعات الصيدلانية",
     imageUrl: pharmaFactoryImage,
     products: ["أدوية عامة", "مكملات غذائية", "منتجات عناية"],
+    latitude: "36.3650",
+    longitude: "6.6147",
   },
   {
     id: "4",
@@ -50,6 +59,8 @@ const mockFactories = [
     categoryAr: "صناعة السيارات",
     imageUrl: automotiveFactoryImage,
     products: ["قطع غيار", "إطارات", "بطاريات"],
+    latitude: "35.6969",
+    longitude: "-0.6331",
   },
   {
     id: "5",
@@ -60,6 +71,8 @@ const mockFactories = [
     categoryAr: "الصناعات الإلكترونية",
     imageUrl: electronicsFactoryImage,
     products: ["أجهزة إلكترونية", "لوحات إلكترونية", "مكونات"],
+    latitude: "36.7538",
+    longitude: "3.0588",
   },
   {
     id: "6",
@@ -70,6 +83,8 @@ const mockFactories = [
     categoryAr: "الصناعات الغذائية",
     imageUrl: foodFactoryImage,
     products: ["معجنات", "حلويات", "مواد غذائية معلبة"],
+    latitude: "36.9000",
+    longitude: "7.7667",
   },
   {
     id: "7",
@@ -80,6 +95,8 @@ const mockFactories = [
     categoryAr: "الصناعات النسيجية",
     imageUrl: textileFactoryImage,
     products: ["ملابس تقليدية", "أقمشة حريرية", "منتجات يدوية"],
+    latitude: "34.8780",
+    longitude: "-1.3150",
   },
   {
     id: "8",
@@ -90,6 +107,8 @@ const mockFactories = [
     categoryAr: "الصناعات الصيدلانية",
     imageUrl: pharmaFactoryImage,
     products: ["معدات طبية", "أدوات جراحية", "مستلزمات صحية"],
+    latitude: "35.5559",
+    longitude: "6.1741",
   },
   {
     id: "9",
@@ -100,6 +119,8 @@ const mockFactories = [
     categoryAr: "صناعة السيارات",
     imageUrl: automotiveFactoryImage,
     products: ["سيارات", "شاحنات", "حافلات"],
+    latitude: "36.1648",
+    longitude: "1.3347",
   },
 ];
 
@@ -122,16 +143,22 @@ export default function Factories() {
     });
   }, [searchQuery, selectedWilaya, selectedCategory]);
 
+  const [, setLocation] = useLocation();
+
+  const handleFactoryClick = (factoryId: string) => {
+    setLocation(`/factory/${factoryId}`);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <div className="bg-primary py-16">
+      <div className="bg-primary py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-4">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-3 md:mb-4">
             دليل المصانع الجزائرية
           </h1>
-          <p className="text-lg text-primary-foreground/90">
+          <p className="text-base md:text-lg text-primary-foreground/90">
             اكتشف المصانع في جميع الولايات والقطاعات الصناعية
           </p>
         </div>
@@ -146,14 +173,37 @@ export default function Factories() {
         onCategoryChange={setSelectedCategory}
       />
       
-      <section className="max-w-7xl mx-auto px-4 py-12 flex-1">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2 text-foreground">النتائج</h2>
-          <p className="text-muted-foreground">
+      <section className="max-w-7xl mx-auto px-4 py-8 md:py-12 flex-1">
+        <div className="mb-6 md:mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">النتائج</h2>
+          <p className="text-sm md:text-base text-muted-foreground">
             {filteredFactories.length} مصنع متاح
           </p>
         </div>
-        <FactoryGrid factories={filteredFactories} />
+
+        <Tabs defaultValue="grid" className="w-full" dir="rtl">
+          <TabsList className="grid w-full max-w-md mb-6 grid-cols-2" data-testid="tabs-view-mode">
+            <TabsTrigger value="grid" className="gap-2 text-sm md:text-base" data-testid="tab-grid">
+              <Grid3X3 className="w-4 h-4 md:w-5 md:h-5" />
+              عرض شبكي
+            </TabsTrigger>
+            <TabsTrigger value="map" className="gap-2 text-sm md:text-base" data-testid="tab-map">
+              <Map className="w-4 h-4 md:w-5 md:h-5" />
+              عرض الخريطة
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="grid" className="mt-0">
+            <FactoryGrid factories={filteredFactories} />
+          </TabsContent>
+
+          <TabsContent value="map" className="mt-0">
+            <AlgeriaMap 
+              factories={filteredFactories} 
+              onFactoryClick={handleFactoryClick}
+            />
+          </TabsContent>
+        </Tabs>
       </section>
 
       <Footer />

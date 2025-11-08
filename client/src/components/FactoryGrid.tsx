@@ -1,4 +1,5 @@
 import FactoryCard from "./FactoryCard";
+import FactoryCardSkeleton from "./FactoryCardSkeleton";
 
 interface Factory {
   id: string;
@@ -13,9 +14,20 @@ interface Factory {
 
 interface FactoryGridProps {
   factories: Factory[];
+  isLoading?: boolean;
 }
 
-export default function FactoryGrid({ factories }: FactoryGridProps) {
+export default function FactoryGrid({ factories, isLoading = false }: FactoryGridProps) {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 6 }).map((_, idx) => (
+          <FactoryCardSkeleton key={idx} />
+        ))}
+      </div>
+    );
+  }
+
   if (factories.length === 0) {
     return (
       <div className="text-center py-12">

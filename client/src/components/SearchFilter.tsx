@@ -31,24 +31,24 @@ export default function SearchFilter({
   const { t, language } = useLanguage();
 
   return (
-    <section className="w-full bg-background py-12">
+    <section className="w-full bg-background py-8 md:py-12">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 md:gap-6">
           <div className="relative">
-            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+            <Search className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-muted-foreground pointer-events-none" />
             <Input
               type="search"
               placeholder={t.search.placeholder}
-              className="w-full pr-12 h-12 text-base"
+              className="w-full pr-10 md:pr-12 h-11 md:h-12 text-sm md:text-base"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               data-testid="input-search"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <Select value={selectedWilaya} onValueChange={onWilayaChange}>
-              <SelectTrigger className="h-12" data-testid="select-wilaya">
+              <SelectTrigger className="h-11 md:h-12 text-sm md:text-base" data-testid="select-wilaya">
                 <SelectValue placeholder={t.search.selectWilaya} />
               </SelectTrigger>
               <SelectContent>
@@ -62,7 +62,7 @@ export default function SearchFilter({
             </Select>
 
             <Select value={selectedCategory} onValueChange={onCategoryChange}>
-              <SelectTrigger className="h-12" data-testid="select-category">
+              <SelectTrigger className="h-11 md:h-12 text-sm md:text-base" data-testid="select-category">
                 <SelectValue placeholder={t.search.selectCategory} />
               </SelectTrigger>
               <SelectContent>
@@ -81,7 +81,7 @@ export default function SearchFilter({
               <Badge
                 key={category.id}
                 variant="secondary"
-                className="cursor-pointer hover-elevate active-elevate-2"
+                className="cursor-pointer hover-elevate active-elevate-2 text-xs md:text-sm px-2.5 md:px-3 py-1 md:py-1.5"
                 onClick={() => onCategoryChange(category.id)}
                 data-testid={`badge-category-${category.id}`}
               >
