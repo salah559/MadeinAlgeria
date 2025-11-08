@@ -1,0 +1,48 @@
+08:53:30.184 Running build in Washington, D.C., USA (East) – iad1
+08:53:30.184 Build machine configuration: 2 cores, 8 GB
+08:53:30.325 Cloning github.com/salah559/MadeinAlgeria (Branch: main, Commit: 6d72577)
+08:53:31.169 Cloning completed: 844.000ms
+08:53:31.287 Restored build cache from previous deployment (5xfnn7WRiC7TRxnUe9BAeiS3QTMw)
+08:53:31.848 Running "vercel build"
+08:53:32.240 Vercel CLI 48.9.0
+08:53:33.161 Installing dependencies...
+08:53:34.561 
+08:53:34.562 removed 7 packages in 1s
+08:53:34.563 
+08:53:34.564 64 packages are looking for funding
+08:53:34.564   run `npm fund` for details
+08:53:34.596 Running "npm run build"
+08:53:34.705 
+08:53:34.706 > rest-express@1.0.0 build
+08:53:34.706 > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+08:53:34.706 
+08:53:34.999 [36mvite v5.4.20 [32mbuilding for production...[36m[39m
+08:53:35.056 transforming...
+08:53:36.399 
+08:53:36.400 A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+08:53:39.624 [32m✓[39m 1756 modules transformed.
+08:53:39.920 rendering chunks...
+08:53:39.936 computing gzip size...
+08:53:39.952 [2m../dist/public/[22m[32mindex.html                                                        [39m[1m[2m    0.90 kB[22m[1m[22m[2m │ gzip:   0.54 kB[22m
+08:53:39.952 [2m../dist/public/[22m[2massets/[22m[32mIMG_20251107_233735_1762555070356-Dwd_dA7i.png             [39m[1m[2m  131.98 kB[22m[1m[22m
+08:53:39.953 [2m../dist/public/[22m[2massets/[22m[32m1762327857479 (1)_1762540489724-CFYwkt6J.png               [39m[1m[2m  139.54 kB[22m[1m[22m
+08:53:39.953 [2m../dist/public/[22m[2massets/[22m[32mHero_manufacturing_facility_Algeria_45cb30d8-DO8OfhO0.png  [39m[1m[2m1,574.20 kB[22m[1m[22m
+08:53:39.953 [2m../dist/public/[22m[2massets/[22m[32mPharmaceutical_factory_Algeria_853de564-pzq3oWh8.png       [39m[1m[2m1,615.84 kB[22m[1m[22m
+08:53:39.953 [2m../dist/public/[22m[2massets/[22m[32mElectronics_factory_Algeria_81f5e0be-YBRNbzJJ.png          [39m[1m[2m1,825.51 kB[22m[1m[22m
+08:53:39.954 [2m../dist/public/[22m[2massets/[22m[32mFood_processing_factory_Algeria_948f6d0a-B99NZKTi.png      [39m[1m[2m1,845.37 kB[22m[1m[22m
+08:53:39.954 [2m../dist/public/[22m[2massets/[22m[32mAutomotive_factory_Algeria_61d5bf78-CkdXEwr2.png           [39m[1m[2m2,001.53 kB[22m[1m[22m
+08:53:39.954 [2m../dist/public/[22m[2massets/[22m[32mTextile_factory_Algeria_9b983e89-BTa1skeC.png              [39m[1m[2m2,020.16 kB[22m[1m[22m
+08:53:39.954 [2m../dist/public/[22m[2massets/[22m[35mindex-CuXBIQgJ.css                                         [39m[1m[2m   75.10 kB[22m[1m[22m[2m │ gzip:  12.11 kB[22m
+08:53:39.955 [2m../dist/public/[22m[2massets/[22m[36mindex-CI5nbVuv.js                                          [39m[1m[2m  427.73 kB[22m[1m[22m[2m │ gzip: 131.69 kB[22m
+08:53:39.955 [32m✓ built in 4.93s[39m
+08:53:40.039 
+08:53:40.039   dist/index.js  10.0kb
+08:53:40.039 
+08:53:40.039 ⚡ Done in 8ms
+08:53:40.137 Build Completed in /vercel/output [7s]
+08:53:40.248 Deploying outputs...
+08:53:42.685 Deployment completed
+08:53:43.281 Creating build cache...
+08:53:56.364 Created build cache: 13.083s
+08:53:56.365 Uploading build cache [77.62 MB]
+08:53:57.458 Build cache uploaded: 1.087s
