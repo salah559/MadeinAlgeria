@@ -37,10 +37,10 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 h-20 md:h-24 lg:h-28 flex items-center justify-between">
         <Link href="/">
           <div className="flex items-center hover-elevate active-elevate-2 px-3 py-2 rounded-md cursor-pointer" data-testid="link-home">
-            <img src={logoImage} alt="Made in Algeria Logo" className="h-full w-auto object-contain py-2" />
+            <img src={logoImage} alt="Made in Algeria Logo" className="h-full w-auto object-contain py-2 md:h-16 lg:h-20" />
           </div>
         </Link>
 
