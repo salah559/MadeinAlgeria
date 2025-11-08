@@ -169,11 +169,13 @@ export default function Header() {
                 {t.nav.contact}
               </Button>
             </Link>
-            <Link href="/admin">
-              <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-admin">
-                {t.nav.admin}
-              </Button>
-            </Link>
+            {isAdmin && (
+              <Link href="/admin">
+                <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-admin">
+                  {t.nav.admin}
+                </Button>
+              </Link>
+            )}
           </nav>
         </div>
       )}
