@@ -1,10 +1,51 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertFactorySchema } from "@shared/schema";
 import { fromError } from "zod-validation-error";
+import passport from "./auth";
+
+const ADMIN_EMAIL = "bouazzasalah120120@gmail.com";
+
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ error: "Unauthorized" });
+}
+
+function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated() && req.user && (req.user as any).email === ADMIN_EMAIL) {
+    return next();
+  }
+  res.status(403).json({ error: "Forbidden: Admin access required" });
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  app.get("/api/auth/google", passport.authenticate("google", {
+    scope: ["profile", "email"],
+  }));
+
+  app.get("/api/auth/google/callback",
+    passport.authenticate("google", { failureRedirect: "/" }),
+    (_req, res) => {
+      res.redirect("/");
+    }
+  );
+
+  app.get("/api/auth/user", (req, res) => {
+    if (req.isAuthenticated()) {
+      res.json(req.user);
+    } else {
+      res.status(401).json({ error: "Not authenticated" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.logout(() => {
+      res.json({ success: true });
+    });
+  });
   app.get("/api/factories", async (req, res) => {
     try {
       const { search, wilaya, category } = req.query;
@@ -33,7 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/factories", async (req, res) => {
+  app.post("/api/factories", requireAdmin, async (req, res) => {
     try {
       const validatedData = insertFactorySchema.parse(req.body);
       const factory = await storage.createFactory(validatedData);
@@ -48,7 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/factories/:id", async (req, res) => {
+  app.patch("/api/factories/:id", requireAdmin, async (req, res) => {
     try {
       const partialSchema = insertFactorySchema.partial();
       const validatedData = partialSchema.parse(req.body);
@@ -67,7 +108,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/factories/:id", async (req, res) => {
+  app.delete("/api/factories/:id", requireAdmin, async (req, res) => {
     try {
       const success = await storage.deleteFactory(req.params.id);
       if (!success) {

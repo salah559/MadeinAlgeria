@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { Pool, neonConfig } from "@neondatabase/serverless";
-import { type Factory, type InsertFactory, factories } from "@shared/schema";
+import { type Factory, type InsertFactory, factories, type User, type InsertUser, users } from "@shared/schema";
 import { eq, ilike, or, and } from "drizzle-orm";
 import ws from "ws";
 
@@ -18,6 +18,10 @@ export interface IStorage {
   createFactory(factory: InsertFactory): Promise<Factory>;
   updateFactory(id: string, factory: Partial<InsertFactory>): Promise<Factory | undefined>;
   deleteFactory(id: string): Promise<boolean>;
+  getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  updateUser(id: string, user: Partial<InsertUser>): Promise<User | undefined>;
 }
 
 export class DbStorage implements IStorage {
@@ -75,6 +79,30 @@ export class DbStorage implements IStorage {
   async deleteFactory(id: string): Promise<boolean> {
     const result = await db.delete(factories).where(eq(factories.id, id)).returning();
     return result.length > 0;
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.email, email));
+    return result[0];
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const result = await db.insert(users).values(user).returning();
+    return result[0];
+  }
+
+  async updateUser(id: string, user: Partial<InsertUser>): Promise<User | undefined> {
+    const result = await db
+      .update(users)
+      .set(user)
+      .where(eq(users.id, id))
+      .returning();
+    return result[0];
   }
 }
 
