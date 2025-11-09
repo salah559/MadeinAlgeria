@@ -15,26 +15,6 @@ export default function FactoryGridExample() {
       imageUrl: foodFactoryImage,
       products: ["زيت الزيتون", "الزيتون المعلب", "المخللات"],
     },
-    {
-      id: "2",
-      name: "Textile Factory",
-      nameAr: "مصنع النسيج الوطني",
-      wilaya: "سطيف",
-      category: "textile",
-      categoryAr: "الصناعات النسيجية",
-      imageUrl: textileFactoryImage,
-      products: ["أقمشة قطنية", "ملابس جاهزة", "منسوجات منزلية"],
-    },
-    {
-      id: "3",
-      name: "Pharmaceutical Factory",
-      nameAr: "مصنع الأدوية الجزائري",
-      wilaya: "قسنطينة",
-      category: "pharmaceutical",
-      categoryAr: "الصناعات الصيدلانية",
-      imageUrl: pharmaFactoryImage,
-      products: ["أدوية عامة", "مكملات غذائية", "منتجات عناية"],
-    },
   ];
 
   return (
