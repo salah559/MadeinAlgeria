@@ -5,6 +5,7 @@ import { Pool } from "@neondatabase/serverless";
 import passport from "./auth";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { seedDatabase } from "./seed";
 
 const app = express();
 const PgSession = connectPgSimple(session);
@@ -20,6 +21,9 @@ app.use(express.json({
   }
 }));
 app.use(express.urlencoded({ extended: false }));
+
+// Seed database on startup
+seedDatabase().catch(console.error);
 
 const sessionStore = process.env.DATABASE_URL
   ? new PgSession({
