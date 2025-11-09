@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -10,7 +11,7 @@ interface SEOProps {
   keywords?: string;
 }
 
-export default function SEO({
+function SEO({
   title,
   description,
   image,
@@ -89,3 +90,6 @@ export default function SEO({
 
   return null;
 }
+
+export default SEO;
+export { SEO };
