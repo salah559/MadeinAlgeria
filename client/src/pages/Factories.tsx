@@ -153,27 +153,8 @@ export default function Factories() {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <div className="relative bg-primary py-12 md:py-16 overflow-hidden">
-        {/* Animated decorative elements with Algerian flag colors */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {/* Green accent lights */}
-          <div className="absolute top-0 left-0 w-96 h-96 rounded-full bg-green-500/50 blur-[100px] animate-float" />
-          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-green-400/40 blur-[120px] animate-float-delayed" />
-          <div className="absolute top-1/3 right-[10%] w-80 h-80 rounded-full bg-green-600/45 blur-[90px] animate-pulse-slow" />
-          
-          {/* Red accent lights */}
-          <div className="absolute top-0 right-0 w-[450px] h-[450px] rounded-full bg-red-500/50 blur-[110px] animate-float-slow" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-red-600/45 blur-[100px] animate-float" />
-          <div className="absolute top-1/2 left-[20%] w-80 h-80 rounded-full bg-red-400/40 blur-[90px] animate-pulse-slow" />
-          
-          {/* Corner gradients for more dramatic effect */}
-          <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-gradient-to-br from-green-500/30 via-green-400/15 to-transparent animate-gradient-shift" />
-          <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-gradient-to-tl from-red-500/30 via-red-400/15 to-transparent animate-gradient-shift-delayed" />
-          <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-bl from-red-500/25 via-transparent to-transparent animate-float-slow" />
-          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-green-500/25 via-transparent to-transparent animate-float-delayed" />
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 text-center">
+      <div className="bg-primary py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-3 md:mb-4">
             دليل المصانع الجزائرية
           </h1>
