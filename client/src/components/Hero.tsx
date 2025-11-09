@@ -15,6 +15,23 @@ export default function Hero() {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
+        
+        {/* Animated decorative elements with Algerian flag colors */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Green circles */}
+          <div className="absolute top-10 left-[10%] w-32 h-32 rounded-full bg-green-500/20 blur-3xl animate-float" />
+          <div className="absolute bottom-20 right-[15%] w-40 h-40 rounded-full bg-green-600/15 blur-3xl animate-float-delayed" />
+          <div className="absolute top-1/3 right-[5%] w-24 h-24 rounded-full bg-green-400/25 blur-2xl animate-pulse-slow" />
+          
+          {/* Red circles */}
+          <div className="absolute top-1/4 right-[20%] w-36 h-36 rounded-full bg-red-500/20 blur-3xl animate-float-slow" />
+          <div className="absolute bottom-1/4 left-[8%] w-28 h-28 rounded-full bg-red-600/15 blur-3xl animate-float" />
+          <div className="absolute top-1/2 left-[25%] w-20 h-20 rounded-full bg-red-400/25 blur-2xl animate-pulse-slow" />
+          
+          {/* Mixed gradients */}
+          <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-br from-green-500/10 via-transparent to-transparent animate-gradient-shift" />
+          <div className="absolute bottom-0 right-0 w-full h-1/3 bg-gradient-to-tl from-red-500/10 via-transparent to-transparent animate-gradient-shift-delayed" />
+        </div>
       </div>
 
       <div className="relative h-full max-w-7xl mx-auto px-4 flex items-center justify-center">
