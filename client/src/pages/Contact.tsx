@@ -5,8 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Contact() {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -14,10 +17,10 @@ export default function Contact() {
       <div className="bg-primary py-16">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-4">
-            اتصل بنا
+            {t.contact.title}
           </h1>
           <p className="text-lg text-primary-foreground/90">
-            نحن هنا للإجابة على استفساراتكم ومساعدتكم
+            {t.contact.subtitle}
           </p>
         </div>
       </div>
@@ -29,8 +32,8 @@ export default function Contact() {
               <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="text-lg font-bold mb-2 text-foreground">البريد الإلكتروني</h3>
-              <p className="text-muted-foreground text-sm mb-2">راسلنا عبر البريد</p>
+              <h3 className="text-lg font-bold mb-2 text-foreground">{t.contact.emailTitle}</h3>
+              <p className="text-muted-foreground text-sm mb-2">{t.contact.emailSubtitle}</p>
               <p className="text-foreground font-medium">info@madeinalgeria.dz</p>
               <p className="text-foreground font-medium">support@madeinalgeria.dz</p>
             </CardContent>
@@ -41,8 +44,8 @@ export default function Contact() {
               <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Phone className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="text-lg font-bold mb-2 text-foreground">الهاتف</h3>
-              <p className="text-muted-foreground text-sm mb-2">اتصل بنا مباشرة</p>
+              <h3 className="text-lg font-bold mb-2 text-foreground">{t.contact.phoneTitle}</h3>
+              <p className="text-muted-foreground text-sm mb-2">{t.contact.phoneSubtitle}</p>
               <p className="text-foreground font-medium" dir="ltr">+213 123 456 789</p>
               <p className="text-foreground font-medium" dir="ltr">+213 987 654 321</p>
             </CardContent>
@@ -53,10 +56,10 @@ export default function Contact() {
               <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <MapPin className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="text-lg font-bold mb-2 text-foreground">العنوان</h3>
-              <p className="text-muted-foreground text-sm mb-2">قم بزيارتنا</p>
-              <p className="text-foreground font-medium">الجزائر العاصمة</p>
-              <p className="text-foreground font-medium">المنطقة الإدارية</p>
+              <h3 className="text-lg font-bold mb-2 text-foreground">{t.contact.addressTitle}</h3>
+              <p className="text-muted-foreground text-sm mb-2">{t.contact.addressSubtitle}</p>
+              <p className="text-foreground font-medium">{t.contact.addressLine1}</p>
+              <p className="text-foreground font-medium">{t.contact.addressLine2}</p>
             </CardContent>
           </Card>
         </div>
@@ -65,7 +68,7 @@ export default function Contact() {
           <div className="lg:col-span-3">
             <Card>
               <CardContent className="p-8">
-                <h2 className="text-2xl font-bold mb-6 text-foreground">أرسل لنا رسالة</h2>
+                <h2 className="text-2xl font-bold mb-6 text-foreground">{t.contact.form.title}</h2>
                 <form className="space-y-6" onSubmit={(e) => {
                   e.preventDefault();
                   console.log('Contact form submitted');
@@ -73,21 +76,21 @@ export default function Contact() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-2 text-foreground">
-                        الاسم الكامل *
+                        {t.contact.fullName} {t.contact.form.required}
                       </label>
                       <Input 
-                        placeholder="أدخل اسمك الكامل" 
+                        placeholder={t.contact.form.namePlaceholder}
                         required
                         data-testid="input-contact-name"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-foreground">
-                        البريد الإلكتروني *
+                        {t.contact.email} {t.contact.form.required}
                       </label>
                       <Input 
                         type="email" 
-                        placeholder="example@email.com" 
+                        placeholder={t.contact.form.emailPlaceholder}
                         required
                         data-testid="input-contact-email"
                       />
@@ -97,21 +100,21 @@ export default function Contact() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-2 text-foreground">
-                        رقم الهاتف *
+                        {t.contact.phone} {t.contact.form.required}
                       </label>
                       <Input 
                         type="tel" 
-                        placeholder="+213 123 456 789" 
+                        placeholder={t.contact.form.phonePlaceholder}
                         required
                         data-testid="input-contact-phone"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-foreground">
-                        الموضوع
+                        {t.contact.subject}
                       </label>
                       <Input 
-                        placeholder="موضوع الرسالة" 
+                        placeholder={t.contact.form.subjectPlaceholder}
                         data-testid="input-contact-subject"
                       />
                     </div>
@@ -119,10 +122,10 @@ export default function Contact() {
 
                   <div>
                     <label className="block text-sm font-medium mb-2 text-foreground">
-                      الرسالة *
+                      {t.contact.message} {t.contact.form.required}
                     </label>
                     <Textarea 
-                      placeholder="اكتب رسالتك هنا..." 
+                      placeholder={t.contact.form.messagePlaceholder}
                       rows={6}
                       required
                       data-testid="textarea-contact-message"
@@ -130,7 +133,7 @@ export default function Contact() {
                   </div>
 
                   <Button type="submit" size="lg" className="w-full" data-testid="button-contact-send">
-                    إرسال الرسالة
+                    {t.contact.sendMessage}
                   </Button>
                 </form>
               </CardContent>
@@ -143,15 +146,15 @@ export default function Contact() {
                 <div className="flex items-start gap-4 mb-6">
                   <Clock className="w-6 h-6 text-primary mt-1" />
                   <div>
-                    <h3 className="text-lg font-bold mb-2 text-foreground">ساعات العمل</h3>
+                    <h3 className="text-lg font-bold mb-2 text-foreground">{t.contact.hours}</h3>
                     <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">الأحد - الخميس</span>
-                        <span className="text-foreground font-medium">8:00 - 17:00</span>
+                      <div className="flex justify-between gap-2">
+                        <span className="text-muted-foreground">{t.contact.workingDays}</span>
+                        <span className="text-foreground font-medium">{t.contact.workingHours}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">الجمعة - السبت</span>
-                        <span className="text-foreground font-medium">مغلق</span>
+                      <div className="flex justify-between gap-2">
+                        <span className="text-muted-foreground">{t.contact.weekend}</span>
+                        <span className="text-foreground font-medium">{t.contact.closed}</span>
                       </div>
                     </div>
                   </div>
@@ -161,19 +164,19 @@ export default function Contact() {
 
             <Card>
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold mb-4 text-foreground">أسئلة شائعة</h3>
+                <h3 className="text-lg font-bold mb-4 text-foreground">{t.contact.faqTitle}</h3>
                 <div className="space-y-3 text-sm">
                   <p className="text-muted-foreground">
-                    هل لديك سؤال حول التسجيل؟
+                    {t.contact.questions.registration}
                   </p>
                   <p className="text-muted-foreground">
-                    هل تحتاج مساعدة في استخدام المنصة؟
+                    {t.contact.questions.usage}
                   </p>
                   <p className="text-muted-foreground">
-                    هل تريد الإعلان عن مصنعك؟
+                    {t.contact.questions.advertise}
                   </p>
                   <Button variant="outline" className="w-full mt-4" data-testid="button-faq">
-                    اطلع على الأسئلة الشائعة
+                    {t.contact.faqButton}
                   </Button>
                 </div>
               </CardContent>
@@ -181,9 +184,9 @@ export default function Contact() {
 
             <Card className="bg-primary text-primary-foreground">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold mb-2">دعم سريع</h3>
+                <h3 className="text-lg font-bold mb-2">{t.contact.quickSupport}</h3>
                 <p className="text-sm text-primary-foreground/90 mb-4">
-                  فريقنا جاهز لمساعدتك في أي وقت
+                  {t.contact.quickSupportDesc}
                 </p>
                 <Button 
                   variant="secondary" 
@@ -191,7 +194,7 @@ export default function Contact() {
                   data-testid="button-quick-support"
                 >
                   <Phone className="w-4 h-4 ml-2" />
-                  اتصل الآن
+                  {t.contact.callNow}
                 </Button>
               </CardContent>
             </Card>
