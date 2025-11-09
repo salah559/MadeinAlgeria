@@ -17,20 +17,22 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
         
         {/* Animated decorative elements with Algerian flag colors */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Green circles */}
-          <div className="absolute top-10 left-[10%] w-32 h-32 rounded-full bg-green-500/20 blur-3xl animate-float" />
-          <div className="absolute bottom-20 right-[15%] w-40 h-40 rounded-full bg-green-600/15 blur-3xl animate-float-delayed" />
-          <div className="absolute top-1/3 right-[5%] w-24 h-24 rounded-full bg-green-400/25 blur-2xl animate-pulse-slow" />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {/* Green accent lights */}
+          <div className="absolute top-0 left-0 w-96 h-96 rounded-full bg-green-500/50 blur-[100px] animate-float" />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-green-400/40 blur-[120px] animate-float-delayed" />
+          <div className="absolute top-1/3 right-[10%] w-80 h-80 rounded-full bg-green-600/45 blur-[90px] animate-pulse-slow" />
           
-          {/* Red circles */}
-          <div className="absolute top-1/4 right-[20%] w-36 h-36 rounded-full bg-red-500/20 blur-3xl animate-float-slow" />
-          <div className="absolute bottom-1/4 left-[8%] w-28 h-28 rounded-full bg-red-600/15 blur-3xl animate-float" />
-          <div className="absolute top-1/2 left-[25%] w-20 h-20 rounded-full bg-red-400/25 blur-2xl animate-pulse-slow" />
+          {/* Red accent lights */}
+          <div className="absolute top-0 right-0 w-[450px] h-[450px] rounded-full bg-red-500/50 blur-[110px] animate-float-slow" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-red-600/45 blur-[100px] animate-float" />
+          <div className="absolute top-1/2 left-[20%] w-80 h-80 rounded-full bg-red-400/40 blur-[90px] animate-pulse-slow" />
           
-          {/* Mixed gradients */}
-          <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-br from-green-500/10 via-transparent to-transparent animate-gradient-shift" />
-          <div className="absolute bottom-0 right-0 w-full h-1/3 bg-gradient-to-tl from-red-500/10 via-transparent to-transparent animate-gradient-shift-delayed" />
+          {/* Corner gradients for more dramatic effect */}
+          <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-gradient-to-br from-green-500/30 via-green-400/15 to-transparent animate-gradient-shift" />
+          <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-gradient-to-tl from-red-500/30 via-red-400/15 to-transparent animate-gradient-shift-delayed" />
+          <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-bl from-red-500/25 via-transparent to-transparent animate-float-slow" />
+          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-green-500/25 via-transparent to-transparent animate-float-delayed" />
         </div>
       </div>
 
