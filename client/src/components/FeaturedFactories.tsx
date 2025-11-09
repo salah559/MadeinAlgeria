@@ -22,7 +22,7 @@ export default function FeaturedFactories() {
   }
 
   return (
-    <section className="py-12 md:py-16" data-testid="section-featured">
+    <section className="py-12 md:py-16 bg-transparent" data-testid="section-featured">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-8 md:mb-12">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4">

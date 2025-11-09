@@ -94,13 +94,13 @@ export default function StatsSection() {
   ];
 
   return (
-    <section className="py-12 md:py-16 bg-muted/50" data-testid="section-stats">
+    <section className="py-12 md:py-16 bg-muted/20 backdrop-blur-sm" data-testid="section-stats">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
           {statsItems.map((stat, index) => (
             <div
               key={index}
-              className="flex flex-col items-center justify-center p-4 md:p-6 rounded-md bg-background border hover-elevate"
+              className="flex flex-col items-center justify-center p-4 md:p-6 rounded-md bg-background/60 backdrop-blur-md border hover-elevate"
               data-testid={`stat-item-${index}`}
             >
               <stat.icon className="w-8 h-8 md:w-10 md:h-10 mb-2 md:mb-3 text-primary" />

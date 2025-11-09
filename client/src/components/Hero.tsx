@@ -12,9 +12,9 @@ export default function Hero() {
         <img 
           src={heroImage} 
           alt="Modern Algerian manufacturing facility" 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover opacity-40"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/30" />
       </div>
 
       <div className="relative h-full max-w-7xl mx-auto px-4 flex items-center justify-center">
