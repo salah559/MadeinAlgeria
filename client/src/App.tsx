@@ -11,6 +11,7 @@ import Factories from "@/pages/Factories";
 import FactoryDetail from "@/pages/FactoryDetail";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
+import Login from "@/pages/Login";
 import Admin from "@/pages/Admin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import NotFound from "@/pages/not-found";
@@ -20,9 +21,10 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/factories" component={Factories} />
-      <Route path="/factory/:id" component={FactoryDetail} />
+      <Route path="/factories/:id" component={FactoryDetail} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
+      <Route path="/login" component={Login} />
       <Route path="/admin" component={Admin} />
       <Route path="/dashboard" component={AdminDashboard} />
       <Route component={NotFound} />

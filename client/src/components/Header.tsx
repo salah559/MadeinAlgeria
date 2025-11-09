@@ -78,7 +78,7 @@ export default function Header() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -107,19 +107,19 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button 
-              variant="default" 
-              size="sm" 
-              className="gap-2"
-              onClick={() => window.location.href = "/api/auth/google"}
-              data-testid="button-google-login"
-            >
-              <SiGoogle className="h-4 w-4" />
-              <span className="hidden md:inline">تسجيل الدخول / Login</span>
-              <span className="md:hidden"><LogIn className="h-4 w-4" /></span>
-            </Button>
+            <Link href="/login">
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="gap-2"
+                data-testid="button-google-login"
+              >
+                <LogIn className="h-4 w-4" />
+                <span className="hidden md:inline">تسجيل الدخول / Login</span>
+              </Button>
+            </Link>
           )}
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="gap-2 min-w-[120px] justify-start" data-testid="button-language">
@@ -143,7 +143,7 @@ export default function Header() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          
+
           <Button 
             variant="ghost" 
             size="icon" 
