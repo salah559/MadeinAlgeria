@@ -1,356 +1,43 @@
 # دليل المصانع الجزائري - Made in Algeria
 
-## نظرة عامة
-تطبيق ويب شامل لدليل المصانع الجزائرية، يوفر منصة متقدمة للبحث عن المصانع والمنشآت الصناعية في الجزائر بمختلف القطاعات.
+## Overview
+A comprehensive web application serving as a directory for Algerian factories, offering an advanced platform to search for factories and industrial facilities across various sectors in Algeria. The project aims to provide detailed information about each factory, including an interactive map for location, and a robust admin panel for content management. This platform addresses a significant market need by centralizing industrial information, boosting visibility for Algerian manufacturers, and facilitating business connections, ultimately contributing to the national economy.
 
-## المميزات الحالية
+## User Preferences
+I prefer to communicate in Arabic.
+I like the use of clear and concise language.
+I want iterative development with regular updates.
+I prefer detailed explanations for complex changes.
+Ask for my approval before implementing major architectural changes or feature additions.
+Do not make changes to the existing translation structure without prior discussion.
 
-### 🌍 نظام الترجمة متعدد اللغات
-- **دعم ثلاث لغات كاملة**:
-  - العربية (RTL) - اللغة الافتراضية
-  - الإنجليزية (LTR)
-  - الفرنسية (LTR)
+## System Architecture
 
-- **مبدل اللغة في Header**:
-  - قائمة منسدلة مع أعلام الدول
-  - حفظ اللغة المختارة في localStorage
-  - تبديل تلقائي لاتجاه النص (RTL/LTR)
-  - تحديث فوري للواجهة عند تغيير اللغة
+### UI/UX Decisions
+The application features a clean, responsive design using `shadcn/ui` and `Tailwind CSS`. It supports a multi-language interface (Arabic, English, French) with automatic RTL/LTR adjustment. Interactive elements include a dynamic language switcher, skeleton loading for improved user experience, and a tab-based system for switching between factory list view and map view.
 
-- **ترجمة شاملة للمكونات**:
-  - Hero Section (العنوان الرئيسي والوصف)
-  - SearchFilter (البحث والتصفية)
-  - FactoryCard (بطاقات المصانع مع تسميات الفئات)
-  - Footer (التذييل وجميع الروابط)
-  - Navigation (القوائم الرئيسية)
+### Technical Implementations
+- **Frontend**: Built with React 18 and TypeScript, using Vite for fast development, Wouter for routing, and TanStack Query for data management.
+- **Backend**: Implemented with Express.js as a REST API, utilizing Drizzle ORM for database interaction.
+- **Multi-language System**: A comprehensive translation system managed via `LanguageContext.tsx` and `translations.ts`, supporting type-safe translations and dynamic UI updates.
+- **Interactive Map**: Integrates Leaflet 1.9.4 and react-leaflet 4.2.1 to display factory locations on an interactive map of Algeria, with clickable markers and auto-zoom functionality.
+- **Admin Panel**: Provides full CRUD (Create, Read, Update, Delete) capabilities for managing factories and their products, accessible via protected routes.
+- **Authentication**: Implemented with Passport.js and Google OAuth for secure user login and role-based access control, specifically protecting admin functionalities.
 
-- **البنية التقنية للترجمة**:
-  - `client/src/contexts/LanguageContext.tsx`: Context API لإدارة اللغة
-  - `client/src/lib/translations.ts`: ملف الترجمات المركزي
-  - استخدام `useLanguage()` hook في المكونات
-  - Type-safe translations مع TypeScript
+### Feature Specifications
+- **Factory Directory**: Displays a searchable and filterable list of factories by name, wilaya (province), and industrial sector. Each factory has a detailed page.
+- **Admin Dashboard**: Secure panel for adding, editing, and deleting factory information and managing products.
+- **Multi-language Support**: Full UI translation across key components including header, hero section, search filters, factory cards, and footer.
+- **Responsive Design**: Optimized for various screen sizes, including specific mobile enhancements for critical components.
 
-### 🏭 دليل المصانع
-- **عرض قائمة المصانع**: بطاقات تفاعلية مع جميع المعلومات
-- **Skeleton Loading**: حالة تحميل مرئية أثناء جلب البيانات
-- **بحث متقدم**: بالاسم العربي/الإنجليزي، الوصف
-- **تصفية حسب الولاية**: 58 ولاية جزائرية
-- **تصفية حسب القطاع**: أكثر من 15 قطاع صناعي
-- **صفحة تفاصيل**: معلومات شاملة لكل مصنع
-- **خريطة تفاعلية**: عرض مواقع المصانع على خريطة الجزائر مع نقاط GPS
-- **عرض متعدد**: التبديل بين العرض الشبكي وعرض الخريطة
+### System Design Choices
+- **Serverless First**: Designed for deployment on Vercel with a serverless backend architecture (`api/index.ts`) for scalability and cost-efficiency.
+- **Database**: PostgreSQL (Neon Serverless) for robust data storage, integrated via Drizzle ORM.
+- **API Endpoints**: Structured RESTful API for factories management, supporting GET, POST, PATCH, and DELETE operations.
+- **Environment Management**: Utilizes environment variables for sensitive data like `DATABASE_URL`, managed through Replit Secrets and Vercel Environment Variables.
 
-### ⚙️ لوحة تحكم Admin
-- **إضافة مصانع جديدة**: نموذج شامل لجميع البيانات
-- **تعديل المصانع**: تحديث المعلومات
-- **حذف المصانع**: مع تأكيد الحذف
-- **البحث والتصفية**: في لوحة التحكم
-- **إدارة المنتجات**: إضافة/حذف منتجات (عربي/إنجليزي)
-
-### 📋 صفحات التطبيق
-- **الصفحة الرئيسية (Home)**: عرض عام للمنصة مع بحث سريع
-- **المصانع (Factories)**: قائمة قابلة للبحث والتصفية
-- **تفاصيل المصنع (Factory Detail)**: معلومات شاملة عن كل مصنع
-- **من نحن (About)**: معلومات عن المشروع
-- **اتصل بنا (Contact)**: نموذج للتواصل
-- **لوحة التحكم (Admin)**: إدارة المصانع (مفتوحة للجميع حالياً)
-
-## البنية التقنية
-
-### Frontend
-- **React 18** مع **TypeScript**
-- **Vite** للبناء والتطوير السريع
-- **Wouter** للراوتر (Routing)
-- **TanStack Query** لإدارة البيانات
-- **shadcn/ui** للمكونات
-- **Tailwind CSS** للتنسيق
-- **Leaflet 1.9.4** + **react-leaflet 4.2.1** للخرائط التفاعلية
-
-### Backend
-- **Express.js** كـ REST API
-- **Drizzle ORM** للتعامل مع قاعدة البيانات
-- **PostgreSQL (Neon)** لتخزين البيانات
-- **Neon Serverless** للاتصال بقاعدة البيانات
-
-### قاعدة البيانات
-يستخدم التطبيق **Neon PostgreSQL** - قاعدة بيانات serverless متوافقة مع Vercel.
-
-## الملفات المهمة
-
-### الواجهة الأمامية
-- `client/src/App.tsx`: المكون الرئيسي مع LanguageProvider و Routing
-- `client/src/components/Header.tsx`: شريط التنقل مع مبدل اللغة
-- `client/src/components/AlgeriaMap.tsx`: خريطة تفاعلية بـ Leaflet
-- `client/src/components/FactoryCardSkeleton.tsx`: Skeleton loader لبطاقات المصانع
-- `client/src/pages/`: جميع صفحات التطبيق
-- `client/src/contexts/LanguageContext.tsx`: Context لإدارة اللغة والترجمة
-- `client/src/lib/translations.ts`: ملف الترجمات المركزي (عربي، إنجليزي، فرنسي)
-
-### Backend
-- `server/index.ts`: خادم Express الرئيسي (للتطوير المحلي)
-- `server/routes.ts`: API endpoints
-- `server/storage.ts`: واجهة التخزين
-- `api/index.ts`: Serverless Function للنشر على Vercel
-
-### قاعدة البيانات
-- `shared/schema.ts`: نماذج البيانات (Drizzle Schema)
-- `drizzle.config.ts`: إعدادات Drizzle ORM
-- `server/storage.ts`: واجهة التخزين والاتصال بقاعدة البيانات
-
-### Vercel
-- `vercel.json`: إعدادات النشر على Vercel
-- `.vercelignore`: الملفات المستبعدة من النشر
-- `VERCEL_DEPLOYMENT.md`: دليل شامل للنشر على Vercel
-
-## الاستخدام
-
-### التطوير
-```bash
-npm run dev
-```
-يبدأ خادم Express و Vite على المنفذ 5000
-
-### بناء المشروع
-```bash
-npm run build
-```
-
-### إدارة قاعدة البيانات
-```bash
-npm run db:push
-```
-
-## إعداد قاعدة البيانات
-
-### 1. إنشاء قاعدة بيانات Neon
-
-**الطريقة الأولى: عبر Vercel (موصى بها)**
-1. عند النشر على Vercel، اختر "Add Database"
-2. اختر Neon PostgreSQL
-3. سيتم إنشاء القاعدة تلقائياً وربطها بالمشروع
-
-**الطريقة الثانية: مباشرة من Neon**
-1. اذهب إلى [neon.tech](https://neon.tech)
-2. أنشئ حساباً جديداً أو سجل دخول
-3. أنشئ مشروعاً جديداً (New Project)
-4. انسخ Connection String
-
-### 2. إضافة المتغيرات البيئية
-
-**في Replit:**
-1. افتح Secrets (Tools → Secrets)
-2. أضف: `DATABASE_URL` مع Connection String من Neon
-
-**في Vercel:**
-1. Settings → Environment Variables
-2. أضف: `DATABASE_URL` مع Connection String من Neon
-
-### 3. إنشاء الجداول
-
-```bash
-npm run db:push
-```
-
-هذا الأمر سينشئ جميع الجداول المطلوبة في قاعدة البيانات.
-
-## 🔌 API Endpoints المتاحة
-
-### المصانع (Factories)
-- `GET /api/factories` - جلب جميع المصانع (مع دعم البحث والتصفية)
-  - Query parameters: `?search=...&wilaya=...&category=...`
-- `GET /api/factories/:id` - جلب تفاصيل مصنع محدد
-- `POST /api/factories` - إضافة مصنع جديد
-- `PATCH /api/factories/:id` - تحديث مصنع
-- `DELETE /api/factories/:id` - حذف مصنع
-
-## النشر على Vercel
-
-المشروع مُعد بالكامل للنشر على Vercel! راجع ملف `VERCEL_DEPLOYMENT.md` للحصول على دليل شامل.
-
-### الخطوات السريعة:
-1. **رفع المشروع إلى GitHub**
-2. **ربطه بـ Vercel**: اذهب إلى [vercel.com](https://vercel.com) → New Project
-3. **إعدادات المشروع**:
-   - Framework Preset: **Vite**
-   - Build Command: `npm run build` (تلقائي)
-   - Output Directory: `dist` (تلقائي)
-4. **Environment Variables**: أضف `DATABASE_URL` من Neon
-5. **Deploy** - والتطبيق جاهز! 🎉
-
-### الملفات الجاهزة:
-- ✅ `api/index.ts` - Serverless Function جاهز
-- ✅ `vercel.json` - إعدادات Vercel محسّنة
-- ✅ `.vercelignore` - استبعاد الملفات غير المطلوبة
-- ✅ CORS Headers - مُعدّة بشكل صحيح
-
-## 📖 دليل إضافة الترجمات للصفحات الجديدة
-
-تم تطبيق نظام الترجمة بالكامل على صفحة Contact كمثال. لإضافة ترجمات لصفحات أخرى، اتبع هذه الخطوات:
-
-### الخطوة 1: إضافة الترجمات في `translations.ts`
-
-```typescript
-// في client/src/lib/translations.ts
-export const translations = {
-  ar: {
-    // ... existing translations
-    yourPage: {  // استبدل yourPage باسم صفحتك
-      title: "العنوان بالعربية",
-      subtitle: "العنوان الفرعي",
-      // أضف جميع النصوص المطلوبة
-    }
-  },
-  en: {
-    // ... existing translations
-    yourPage: {
-      title: "Title in English",
-      subtitle: "Subtitle",
-      // نفس المفاتيح بالضبط
-    }
-  },
-  fr: {
-    // ... existing translations
-    yourPage: {
-      title: "Titre en français",
-      subtitle: "Sous-titre",
-      // نفس المفاتيح بالضبط
-    }
-  }
-}
-```
-
-**ملاحظات مهمة:**
-- تأكد من أن **جميع اللغات لها نفس المفاتيح بالضبط**
-- استخدم بنية واضحة ومنطقية (مثال: `form.namePlaceholder`, `questions.registration`)
-- أعد استخدام النصوص المشتركة من `common`, `nav`, `footer` لتجنب التكرار
-
-### الخطوة 2: تحديث الصفحة لاستخدام الترجمات
-
-```typescript
-import { useLanguage } from "@/contexts/LanguageContext";
-
-export default function YourPage() {
-  const { t } = useLanguage();
-
-  return (
-    <div>
-      {/* استخدم t.yourPage.key للوصول للترجمات */}
-      <h1>{t.yourPage.title}</h1>
-      <p>{t.yourPage.subtitle}</p>
-      
-      {/* للنماذج */}
-      <Input placeholder={t.yourPage.form.namePlaceholder} />
-      
-      {/* للأزرار */}
-      <Button>{t.common.save}</Button>
-    </div>
-  );
-}
-```
-
-**ملاحظات مهمة:**
-- استخدم `t.namespace.key` للوصول للترجمات (**ليس** `t("namespace.key")`)
-- `t` هو كائن، ليس دالة
-- استخدم `t.common.*` للنصوص المشتركة (save, cancel, etc.)
-
-### الخطوة 3: الاختبار
-
-1. عرض الصفحة واختبر كل لغة باستخدام مبدل اللغة
-2. تأكد من أن الاتجاه (RTL/LTR) يعمل بشكل صحيح
-3. تحقق من عدم وجود نصوص ثابتة متبقية
-
-### مثال مكتمل: صفحة Contact
-
-راجع الملفات التالية كمثال مكتمل:
-- `client/src/lib/translations.ts` (قسم contact في الثلاث لغات)
-- `client/src/pages/Contact.tsx` (استخدام نظام الترجمة)
-
-## التحديثات الأخيرة
-
-### نوفمبر 9، 2025 - نظام ترجمة صفحة Contact
-- ✅ إضافة ترجمات شاملة لصفحة Contact (عربي، إنجليزي، فرنسي)
-- ✅ تحديث Contact.tsx لاستخدام نظام الترجمة
-- ✅ اختبار الصفحة بنجاح - تعمل بشكل مثالي
-- ✅ توثيق دليل كامل لإضافة الترجمات للصفحات الجديدة
-- 📋 الصفحات المتبقية: About, Factory Detail, Admin Dashboard
-
-### نوفمبر 8، 2025 - نظام المصادقة بواسطة Google OAuth
-- ✅ إضافة جدول المستخدمين في قاعدة البيانات
-- ✅ تثبيت وإعداد Passport.js مع Google OAuth Strategy
-- ✅ إضافة API routes للمصادقة (/api/auth/google, /api/auth/callback, /api/auth/user, /api/auth/logout)
-- ✅ إنشاء AuthContext لإدارة حالة المصادقة
-- ✅ إضافة زر تسجيل الدخول بواسطة Google في Header
-- ✅ عرض معلومات المستخدم وصورة الملف الشخصي
-- ✅ إضافة زر تسجيل الخروج
-- ✅ حماية لوحة التحكم للسماح فقط لـ bouazzasalah120120@gmail.com
-- ✅ حماية جميع API endpoints الخاصة بإنشاء/تحديث/حذف المصانع (requireAdmin middleware)
-- ✅ صفحات مخصصة للوصول المرفوض وطلب تسجيل الدخول
-- ✅ إخفاء رابط Admin من Header للمستخدمين غير المصرح لهم
-
-### نوفمبر 8، 2025 (سابقاً) - تحسينات UI/UX وخريطة تفاعلية
-- ✅ إنشاء مكون FactoryCardSkeleton لحالة التحميل
-- ✅ تحسينات شاملة للهاتف المحمول في جميع المكونات:
-  - Hero: تحسين أحجام العناوين والأزرار والتباعد
-  - SearchFilter: تقليل الحشو وتحسين أحجام النصوص
-  - FactoryCard: تصغير النصوص الثانوية وتحسين التباعد
-  - Footer: تصغير حجم النص والعناوين
-- ✅ إضافة مكتبة Leaflet 1.9.4 + react-leaflet 4.2.1
-- ✅ إنشاء مكون AlgeriaMap تفاعلي بالكامل:
-  - عرض خريطة الجزائر مع نقاط للمصانع
-  - Markers قابلة للنقر تظهر معلومات المصنع
-  - Auto-zoom للمصانع المعروضة
-  - دعم RTL في النصوص
-- ✅ دمج الخريطة في صفحة Factories:
-  - نظام Tabs للتبديل بين العرض الشبكي والخريطة
-  - إضافة إحداثيات GPS للبيانات الوهمية (9 مصانع)
-  - Navigation عند النقر على marker في الخريطة
-- ✅ مراجعة معمارية شاملة - جميع التحسينات تعمل بتناسق
-
-### نوفمبر 8، 2025 (سابقاً) - إعداد كامل للنشر على Vercel
-- ✅ إنشاء `/api/index.ts` كـ Serverless Function
-- ✅ إضافة `vercel.json` مع إعدادات CORS
-- ✅ تحديث `.gitignore` و `.vercelignore`
-- ✅ إضافة معالج OPTIONS للـ CORS preflight
-- ✅ تعديل مسارات API لتناسب Vercel (إزالة بادئة /api)
-- ✅ إصلاح أمر البناء في `package.json` (vite build فقط)
-- ✅ اختبار البناء محلياً - نجح بدون أخطاء
-- ✅ مراجعات متعددة من Architect - المشروع جاهز تماماً
-- ✅ إضافة `VERCEL_DEPLOYMENT.md` - دليل شامل للنشر
-
-### نوفمبر 8، 2025 (سابقاً) - التحويل لـ Vercel + Neon
-- ✅ إزالة Supabase والاعتماد على Neon Database فقط
-- ✅ إزالة نظام المصادقة (مؤقتاً)
-- ✅ تبسيط التطبيق للنشر على Vercel
-- ✅ تحديث التوثيق وإضافة دليل النشر
-- ✅ تحسين حجم Header واللوقو على شاشات الحاسوب
-
-### نوفمبر 7، 2025 - نظام الترجمة متعدد اللغات
-- ✅ إنشاء نظام ترجمة شامل (عربي، إنجليزي، فرنسي)
-- ✅ إضافة LanguageContext مع استمرارية localStorage
-- ✅ تحديث Header مع مبدل لغة متطور (dropdown مع أعلام)
-- ✅ دعم RTL/LTR التلقائي حسب اللغة المختارة
-- ✅ ترجمة جميع المكونات الأساسية
-- ✅ Type-safe translations مع دعم TypeScript الكامل
-
-## الخطوات التالية المقترحة
-
-- [ ] إضافة نظام مصادقة (Clerk أو Auth.js)
-- [ ] ترجمة باقي الصفحات (About, Contact, FactoryDetail)
-- [ ] ربط صفحة Factories بـ API
-- [ ] ربط صفحة Factory Detail بـ API
-- [ ] إضافة رفع الصور للمصانع
-- [x] ~~إضافة خريطة لعرض مواقع المصانع~~ ✅ تم
-- [ ] إضافة Marker Clustering للخريطة عند وجود الكثير من المصانع
-- [ ] إضافة أيقونات مخصصة لكل فئة على الخريطة
-- [ ] إضافة نظام التقييمات والمراجعات
-- [ ] تحسين SEO
-- [ ] إضافة PWA support
-- [ ] إضافة نظام الإشعارات
-
-## ملاحظات تقنية
-
-### الخرائط (Leaflet)
-- استخدام react-leaflet v4.2.1 للتوافق مع React 18
-- إحداثيات GPS للولايات الرئيسية مُعرّفة في mockFactories
-- الخريطة تدعم RTL وتعرض النصوص العربية بشكل صحيح
-- Auto-fit bounds للمصانع المعروضة بعد التصفية
+## External Dependencies
+- **PostgreSQL**: Specifically Neon Serverless PostgreSQL, for primary data storage.
+- **Google OAuth**: Used for user authentication and authorization.
+- **Leaflet (and React-Leaflet)**: For interactive mapping functionalities.
+- **Vercel**: The primary deployment platform for both frontend and serverless backend.
