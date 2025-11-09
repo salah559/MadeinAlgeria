@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Building2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Link } from "wouter";
 import heroImage from "@assets/generated_images/Hero_manufacturing_facility_Algeria_45cb30d8.png";
 
 export default function Hero() {
@@ -38,15 +39,17 @@ export default function Hero() {
               <Building2 className="w-4 h-4 md:w-5 md:h-5 ml-2" />
               {t.hero.exploreButton}
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="bg-background/10 backdrop-blur-md border-2 border-white/30 text-white hover:bg-background/20 w-full sm:w-auto text-sm md:text-base"
-              data-testid="button-register-factory"
-            >
-              {t.hero.registerButton}
-              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-            </Button>
+            <Link href="/register-factory">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="bg-background/10 backdrop-blur-md border-2 border-white/30 text-white hover:bg-background/20 w-full sm:w-auto text-sm md:text-base"
+                data-testid="button-register-factory"
+              >
+                {t.hero.registerButton}
+                <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+              </Button>
+            </Link>
           </div>
 
           <div className="mt-6 md:mt-8 flex items-center justify-center gap-2 text-white/80">
