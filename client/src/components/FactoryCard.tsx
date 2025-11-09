@@ -69,7 +69,7 @@ export default function FactoryCard({
 
       <CardFooter className="p-3 md:p-4 pt-0">
         <Link href={`/factory/${id}`} className="w-full">
-          <Button variant="ghost" className="w-full text-sm md:text-base" data-testid={`button-view-${id}`}>
+          <Button variant="destructive" className="w-full text-sm md:text-base" data-testid={`button-view-${id}`}>
             {t.common.viewDetails}
             <ArrowLeft className="w-3.5 h-3.5 md:w-4 md:h-4 mr-2" />
           </Button>
