@@ -50,6 +50,9 @@ export default function Header() {
               {t.nav.factories}
             </Button>
           </Link>
+          <Link href="/register-factory" className="hover:text-primary transition-colors">
+            {language === 'ar' ? 'سجل مصنعك' : 'Register Factory'}
+          </Link>
           <Link href="/about">
             <Button variant="ghost" size="sm" data-testid="button-nav-about">
               {t.nav.about}
@@ -168,6 +171,9 @@ export default function Header() {
               <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-factories">
                 {t.nav.factories}
               </Button>
+            </Link>
+            <Link href="/register-factory" className="hover:text-primary transition-colors">
+              {language === 'ar' ? 'سجل مصنعك' : 'Register Factory'}
             </Link>
             <Link href="/about">
               <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-about">
