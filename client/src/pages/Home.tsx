@@ -5,6 +5,9 @@ import Hero from "@/components/Hero";
 import SearchFilter from "@/components/SearchFilter";
 import FactoryGrid from "@/components/FactoryGrid";
 import Footer from "@/components/Footer";
+import { SEO } from "@/components/SEO";
+import StatsSection from "@/components/StatsSection";
+import FeaturedFactories from "@/components/FeaturedFactories";
 import foodFactoryImage from "@assets/generated_images/Food_processing_factory_Algeria_948f6d0a.png";
 import textileFactoryImage from "@assets/generated_images/Textile_factory_Algeria_9b983e89.png";
 import pharmaFactoryImage from "@assets/generated_images/Pharmaceutical_factory_Algeria_853de564.png";
@@ -97,8 +100,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEO />
       <Header />
       <Hero />
+      <StatsSection />
+      <FeaturedFactories />
       <SearchFilter
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
