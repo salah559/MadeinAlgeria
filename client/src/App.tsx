@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -6,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import LoadingPage from "@/components/LoadingPage";
 import Home from "@/pages/Home";
 import Factories from "@/pages/Factories";
 import FactoryDetail from "@/pages/FactoryDetail";
@@ -33,6 +35,17 @@ function Router() {
 }
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Show loading page for 3.5 seconds (animation duration + fade out)
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -40,6 +53,7 @@ function App() {
           <AuthProvider>
             <TooltipProvider>
               <Toaster />
+              {isLoading && <LoadingPage />}
               <Router />
             </TooltipProvider>
           </AuthProvider>
