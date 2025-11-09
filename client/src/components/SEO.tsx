@@ -10,7 +10,7 @@ interface SEOProps {
   keywords?: string;
 }
 
-export function SEO({
+export default function SEO({
   title,
   description,
   image,
@@ -20,7 +20,7 @@ export function SEO({
 }: SEOProps) {
   const { language, t } = useLanguage();
 
-  const defaultTitle = language === "ar" 
+  const defaultTitle = language === "ar"
     ? "دليل المصانع الجزائري - Made in Algeria"
     : language === "fr"
     ? "Répertoire des Usines Algériennes - Made in Algeria"
@@ -46,7 +46,7 @@ export function SEO({
     const updateMetaTag = (name: string, content: string, property?: boolean) => {
       const selector = property ? `meta[property="${name}"]` : `meta[name="${name}"]`;
       let element = document.querySelector(selector);
-      
+
       if (!element) {
         element = document.createElement("meta");
         if (property) {
@@ -56,21 +56,21 @@ export function SEO({
         }
         document.head.appendChild(element);
       }
-      
+
       element.setAttribute("content", content);
     };
 
     updateMetaTag("description", metaDescription);
     if (keywords) updateMetaTag("keywords", keywords);
     updateMetaTag("language", language);
-    
+
     updateMetaTag("og:title", metaTitle, true);
     updateMetaTag("og:description", metaDescription, true);
     updateMetaTag("og:image", metaImage, true);
     updateMetaTag("og:url", metaUrl, true);
     updateMetaTag("og:type", type, true);
     updateMetaTag("og:locale", language === "ar" ? "ar_DZ" : language === "fr" ? "fr_FR" : "en_US", true);
-    
+
     updateMetaTag("twitter:card", "summary_large_image", true);
     updateMetaTag("twitter:title", metaTitle, true);
     updateMetaTag("twitter:description", metaDescription, true);
