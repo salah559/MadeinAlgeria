@@ -7,16 +7,18 @@ import { adminAuth } from "./firebase-admin";
 
 const ADMIN_EMAIL = "bouazzasalah120120@gmail.com";
 
-interface AuthRequest extends Request {
-  user?: {
-    uid: string;
-    email?: string;
-    name?: string;
-    picture?: string;
-  };
+declare global {
+  namespace Express {
+    interface User {
+      uid: string;
+      email?: string;
+      name?: string;
+      picture?: string;
+    }
+  }
 }
 
-async function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
+async function requireAuth(req: Request, res: Response, next: NextFunction) {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -40,7 +42,7 @@ async function requireAuth(req: AuthRequest, res: Response, next: NextFunction) 
   }
 }
 
-async function requireAdmin(req: AuthRequest, res: Response, next: NextFunction) {
+async function requireAdmin(req: Request, res: Response, next: NextFunction) {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -69,7 +71,7 @@ async function requireAdmin(req: AuthRequest, res: Response, next: NextFunction)
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  app.post("/api/auth/verify", async (req: AuthRequest, res) => {
+  app.post("/api/auth/verify", async (req, res) => {
     try {
       const { token } = req.body;
       if (!token) {
@@ -96,7 +98,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/auth/user", requireAuth, async (req: AuthRequest, res) => {
+  app.get("/api/auth/user", requireAuth, async (req, res) => {
     try {
       const user = await storage.getUser(req.user!.uid);
       if (!user) {

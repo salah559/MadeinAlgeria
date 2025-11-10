@@ -22,8 +22,15 @@ export default function Login() {
     }
   }, [user, isLoading, setLocation]);
 
-  const handleGoogleLogin = () => {
-    window.location.href = "/api/auth/google";
+  const { signInWithGoogle } = useAuth();
+
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithGoogle();
+      setLocation("/");
+    } catch (error) {
+      console.error("Error during Google login:", error);
+    }
   };
 
   const features = [
