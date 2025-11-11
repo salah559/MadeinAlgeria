@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./firebase-storage";
 import { insertFactorySchema } from "@shared/firebase-types";
 import { fromError } from "zod-validation-error";
-import { adminAuth } from "./firebase-admin";
+import { auth as adminAuth } from "./firebase-admin";
 import { uploadImageToImgBB } from "./imgbb-upload";
 import multer from "multer";
 
@@ -29,14 +29,14 @@ async function requireAuth(req: Request, res: Response, next: NextFunction) {
 
     const token = authHeader.split('Bearer ')[1];
     const decodedToken = await adminAuth.verifyIdToken(token);
-    
+
     req.user = {
       uid: decodedToken.uid,
       email: decodedToken.email,
       name: decodedToken.name,
       picture: decodedToken.picture,
     };
-    
+
     next();
   } catch (error) {
     console.error("Auth error:", error);
@@ -53,18 +53,18 @@ async function requireAdmin(req: Request, res: Response, next: NextFunction) {
 
     const token = authHeader.split('Bearer ')[1];
     const decodedToken = await adminAuth.verifyIdToken(token);
-    
+
     if (!ADMIN_EMAILS.includes(decodedToken.email || '')) {
       return res.status(403).json({ error: "Forbidden: Admin access required" });
     }
-    
+
     req.user = {
       uid: decodedToken.uid,
       email: decodedToken.email,
       name: decodedToken.name,
       picture: decodedToken.picture,
     };
-    
+
     next();
   } catch (error) {
     console.error("Admin auth error:", error);
@@ -97,9 +97,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const base64Image = req.file.buffer.toString('base64');
       const imageName = req.body.name || `factory_${Date.now()}`;
-      
+
       const imageUrl = await uploadImageToImgBB(base64Image, imageName);
-      
+
       res.json({ url: imageUrl });
     } catch (error) {
       console.error("Image upload error:", error);
@@ -115,18 +115,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const decodedToken = await adminAuth.verifyIdToken(token);
-      
+
       let user = await storage.getUserByEmail(decodedToken.email!);
-      
+
       if (!user) {
         user = await storage.createUser({
           email: decodedToken.email!,
           name: decodedToken.name,
           picture: decodedToken.picture,
-          role: decodedToken.email === ADMIN_EMAIL ? "admin" : "user",
+          role: decodedToken.email === ADMIN_EMAILS[0] ? "admin" : "user", // Corrected ADMIN_EMAIL usage
         });
       }
-      
+
       res.json(user);
     } catch (error) {
       console.error("Token verification error:", error);
