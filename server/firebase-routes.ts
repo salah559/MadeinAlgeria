@@ -10,20 +10,6 @@ import multer from "multer";
 
 const ADMIN_EMAILS = ["bouazzasalah120120@gmail.com", "madimoh44@gmail.com"];
 
-declare global {
-  namespace Express {
-    interface User {
-      uid: string;
-      email?: string;
-      name?: string;
-      picture?: string;
-    }
-    interface Request {
-      user?: User;
-    }
-  }
-}
-
 async function requireAuth(req: Request, res: Response, next: NextFunction) {
   try {
     const authHeader = req.headers.authorization;
