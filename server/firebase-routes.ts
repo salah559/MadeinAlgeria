@@ -7,7 +7,7 @@ import { adminAuth } from "./firebase-admin";
 import { uploadImageToImgBB } from "./imgbb-upload";
 import multer from "multer";
 
-const ADMIN_EMAIL = "bouazzasalah120120@gmail.com";
+const ADMIN_EMAILS = ["bouazzasalah120120@gmail.com", "madimoh44@gmail.com"];
 
 declare global {
   namespace Express {
@@ -54,7 +54,7 @@ async function requireAdmin(req: Request, res: Response, next: NextFunction) {
     const token = authHeader.split('Bearer ')[1];
     const decodedToken = await adminAuth.verifyIdToken(token);
     
-    if (decodedToken.email !== ADMIN_EMAIL) {
+    if (!ADMIN_EMAILS.includes(decodedToken.email || '')) {
       return res.status(403).json({ error: "Forbidden: Admin access required" });
     }
     

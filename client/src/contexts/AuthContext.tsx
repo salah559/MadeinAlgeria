@@ -120,7 +120,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  const isAdmin = user?.email === "bouazzasalah120120@gmail.com";
+  const ADMIN_EMAILS = ["bouazzasalah120120@gmail.com", "madimoh44@gmail.com"];
+  const isAdmin = user?.email ? ADMIN_EMAILS.includes(user.email) : false;
 
   const value = {
     user,
