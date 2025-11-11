@@ -4,6 +4,8 @@ import { storage } from "./firebase-storage";
 import { insertFactorySchema } from "@shared/firebase-types";
 import { fromError } from "zod-validation-error";
 import { adminAuth } from "./firebase-admin";
+import { uploadImageToImgBB } from "./imgbb-upload";
+import multer from "multer";
 
 const ADMIN_EMAIL = "bouazzasalah120120@gmail.com";
 
@@ -71,6 +73,40 @@ async function requireAdmin(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // إعداد multer لرفع الصور
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB max
+    },
+    fileFilter: (_req, file, cb) => {
+      if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+      } else {
+        cb(new Error('Only image files are allowed'));
+      }
+    },
+  });
+
+  // Endpoint لرفع الصور
+  app.post("/api/upload/image", requireAuth, upload.single('image'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No image file provided" });
+      }
+
+      const base64Image = req.file.buffer.toString('base64');
+      const imageName = req.body.name || `factory_${Date.now()}`;
+      
+      const imageUrl = await uploadImageToImgBB(base64Image, imageName);
+      
+      res.json({ url: imageUrl });
+    } catch (error) {
+      console.error("Image upload error:", error);
+      res.status(500).json({ error: "Failed to upload image" });
+    }
+  });
+
   app.post("/api/auth/verify", async (req, res) => {
     try {
       const { token } = req.body;
