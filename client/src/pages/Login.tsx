@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,11 +10,14 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SEO from "@/components/SEO";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
   const { user, isLoading } = useAuth();
   const [, setLocation] = useLocation();
   const { language } = useLanguage();
+  const { toast } = useToast();
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
     if (user && !isLoading) {
@@ -25,11 +28,25 @@ export default function Login() {
   const { signInWithGoogle } = useAuth();
 
   const handleGoogleLogin = async () => {
+    setIsSigningIn(true);
     try {
       await signInWithGoogle();
-      setLocation("/");
-    } catch (error) {
+      toast({
+        title: language === "ar" ? "تم تسجيل الدخول بنجاح" : "Login successful",
+        description: language === "ar" ? "جاري تحويلك..." : "Redirecting...",
+      });
+      // الانتظار قليلاً للتأكد من تحديث الحالة
+      setTimeout(() => {
+        setLocation("/");
+      }, 500);
+    } catch (error: any) {
       console.error("Error during Google login:", error);
+      toast({
+        variant: "destructive",
+        title: language === "ar" ? "فشل تسجيل الدخول" : "Login failed",
+        description: error.message || (language === "ar" ? "حدث خطأ أثناء تسجيل الدخول" : "An error occurred during login"),
+      });
+      setIsSigningIn(false);
     }
   };
 
@@ -132,14 +149,28 @@ export default function Login() {
                     size="lg" 
                     className="w-full gap-2 text-lg py-6"
                     onClick={handleGoogleLogin}
+                    disabled={isSigningIn}
                     data-testid="button-google-login"
                   >
-                    <SiGoogle className="h-5 w-5" />
-                    {language === "ar" 
-                      ? "تسجيل الدخول بواسطة Google" 
-                      : language === "fr"
-                      ? "Se connecter avec Google"
-                      : "Sign in with Google"}
+                    {isSigningIn ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        {language === "ar" 
+                          ? "جاري تسجيل الدخول..." 
+                          : language === "fr"
+                          ? "Connexion en cours..."
+                          : "Signing in..."}
+                      </>
+                    ) : (
+                      <>
+                        <SiGoogle className="h-5 w-5" />
+                        {language === "ar" 
+                          ? "تسجيل الدخول بواسطة Google" 
+                          : language === "fr"
+                          ? "Se connecter avec Google"
+                          : "Sign in with Google"}
+                      </>
+                    )}
                   </Button>
 
                   <div className="relative">

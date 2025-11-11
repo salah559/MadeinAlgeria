@@ -47,11 +47,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const token = await fbUser.getIdToken();
       const response = await apiRequest("POST", "/api/auth/verify", { token });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+        console.error("Failed to verify user:", errorData);
+        throw new Error(errorData.error || "Failed to verify user");
+      }
+      
       const userData = await response.json();
       setUser(userData);
     } catch (error) {
       console.error("Error verifying user:", error);
       setUser(null);
+      throw error;
     }
   }
 
@@ -73,8 +81,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       await verifyAndFetchUser(result.user);
+      return result.user;
     } catch (error) {
       console.error("Error signing in with Google:", error);
+      // تسجيل الخروج في حالة فشل التحقق
+      await firebaseSignOut(auth);
       throw error;
     }
   }
