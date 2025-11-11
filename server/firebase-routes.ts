@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./firebase-storage";
 import { insertFactorySchema } from "@shared/firebase-types";
 import { fromError } from "zod-validation-error";
-import { auth as adminAuth } from "./firebase-admin";
+import { adminAuth } from "./firebase-admin";
 import { uploadImageToImgBB } from "./imgbb-upload";
 import multer from "multer";
 
