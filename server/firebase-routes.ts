@@ -1,10 +1,11 @@
 import type { Express, Request, Response, NextFunction } from "express";
+import { Router } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./firebase-storage";
 import { insertFactorySchema } from "@shared/firebase-types";
 import { fromError } from "zod-validation-error";
 import { verifyFirebaseToken } from "./auth-utils";
-import { uploadImageToImgBB } from "./imgbb-upload";
+import { uploadImageBufferToImgBB } from "./imgbb-upload";
 import multer from "multer";
 
 const ADMIN_EMAILS = ["bouazzasalah120120@gmail.com", "madimoh44@gmail.com"];
@@ -16,6 +17,9 @@ declare global {
       email?: string;
       name?: string;
       picture?: string;
+    }
+    interface Request {
+      user?: User;
     }
   }
 }
@@ -95,10 +99,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "No image file provided" });
       }
 
-      const base64Image = req.file.buffer.toString('base64');
       const imageName = req.body.name || `factory_${Date.now()}`;
 
-      const imageUrl = await uploadImageToImgBB(base64Image, imageName);
+      const imageUrl = await uploadImageBufferToImgBB(req.file.buffer, imageName);
 
       res.json({ url: imageUrl });
     } catch (error) {
@@ -226,3 +229,152 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   return httpServer;
 }
+
+const upload = multer({ storage: multer.memoryStorage() });
+const router = Router();
+
+router.get("/stats", async (_req, res) => {
+  try {
+    const factories = await storage.getFactories();
+    const stats = {
+      totalFactories: factories.length,
+      categories: Array.from(new Set(factories.map(f => f.category))).length,
+      wilayas: Array.from(new Set(factories.map(f => f.wilaya))).length,
+    };
+    res.json(stats);
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    res.status(500).json({ error: "Failed to fetch stats" });
+  }
+});
+
+router.post("/upload", requireAuth, upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const imageUrl = await uploadImageBufferToImgBB(req.file.buffer, req.file.originalname);
+    res.json({ imageUrl });
+  } catch (error) {
+    console.error("Image upload error:", error);
+    res.status(500).json({ error: "Failed to upload image" });
+  }
+});
+
+router.post("/auth/verify", async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({ error: "Token is required" });
+    }
+
+    const decodedToken = await verifyFirebaseToken(token);
+
+    let user = await storage.getUserByEmail(decodedToken.email!);
+
+    if (!user) {
+      user = await storage.createUser({
+        email: decodedToken.email!,
+        name: decodedToken.name,
+        picture: decodedToken.picture,
+        role: decodedToken.email === ADMIN_EMAILS[0] ? "admin" : "user",
+      });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Token verification error:", error);
+    res.status(401).json({ error: "Invalid token" });
+  }
+});
+
+router.get("/auth/user", requireAuth, async (req, res) => {
+  try {
+    const user = await storage.getUser(req.user!.uid);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
+
+router.get("/factories", async (req, res) => {
+  try {
+    const { search, wilaya, category } = req.query;
+    const factories = await storage.getFactories(
+      search as string,
+      wilaya as string,
+      category as string
+    );
+    res.json(factories);
+  } catch (error) {
+    console.error("Error fetching factories:", error);
+    res.status(500).json({ error: "Failed to fetch factories" });
+  }
+});
+
+router.get("/factories/:id", async (req, res) => {
+  try {
+    const factory = await storage.getFactory(req.params.id);
+    if (!factory) {
+      return res.status(404).json({ error: "Factory not found" });
+    }
+    res.json(factory);
+  } catch (error) {
+    console.error("Error fetching factory:", error);
+    res.status(500).json({ error: "Failed to fetch factory" });
+  }
+});
+
+router.post("/factories", requireAdmin, async (req, res) => {
+  try {
+    const validatedData = insertFactorySchema.parse(req.body);
+    const factory = await storage.createFactory(validatedData);
+    res.status(201).json(factory);
+  } catch (error: any) {
+    if (error.name === "ZodError") {
+      const validationError = fromError(error);
+      return res.status(400).json({ error: validationError.toString() });
+    }
+    console.error("Error creating factory:", error);
+    res.status(500).json({ error: "Failed to create factory" });
+  }
+});
+
+router.patch("/factories/:id", requireAdmin, async (req, res) => {
+  try {
+    const partialSchema = insertFactorySchema.partial();
+    const validatedData = partialSchema.parse(req.body);
+    const factory = await storage.updateFactory(req.params.id, validatedData);
+    if (!factory) {
+      return res.status(404).json({ error: "Factory not found" });
+    }
+    res.json(factory);
+  } catch (error: any) {
+    if (error.name === "ZodError") {
+      const validationError = fromError(error);
+      return res.status(400).json({ error: validationError.toString() });
+    }
+    console.error("Error updating factory:", error);
+    res.status(500).json({ error: "Failed to update factory" });
+  }
+});
+
+router.delete("/factories/:id", requireAdmin, async (req, res) => {
+  try {
+    const success = await storage.deleteFactory(req.params.id);
+    if (!success) {
+      return res.status(404).json({ error: "Factory not found" });
+    }
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error deleting factory:", error);
+    res.status(500).json({ error: "Failed to delete factory" });
+  }
+});
+
+export default router;
