@@ -65,11 +65,6 @@ export default function Header() {
           </Link>
           {isAdmin && (
             <>
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm" data-testid="button-nav-dashboard">
-                  {language === "ar" ? "لوحة التحكم" : "Dashboard"}
-                </Button>
-              </Link>
               <Link href="/admin">
                 <Button variant="ghost" size="sm" data-testid="button-nav-admin">
                   {t.nav.admin}
@@ -187,11 +182,6 @@ export default function Header() {
             </Link>
             {isAdmin && (
               <>
-                <Link href="/dashboard">
-                  <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-dashboard">
-                    {language === "ar" ? "لوحة التحكم" : "Dashboard"}
-                  </Button>
-                </Link>
                 <Link href="/admin">
                   <Button variant="ghost" className="w-full justify-start" data-testid="button-mobile-admin">
                     {t.nav.admin}
