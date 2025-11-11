@@ -1,7 +1,17 @@
 import express from "express";
 import cors from "cors";
 import { registerRoutes } from "../server/firebase-routes";
-import { log } from "../server/vite";
+
+// Simple log function for serverless environment
+function log(message: string) {
+  const timestamp = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+  console.log(`${timestamp} [api] ${message}`);
+}
 
 const app = express();
 
