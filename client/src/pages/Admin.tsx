@@ -459,12 +459,12 @@ export default function Admin() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/20">
         <Header />
         <main className="flex-1 flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <Loader2 className="w-12 h-12 animate-spin mx-auto text-primary" />
-            <p className="text-muted-foreground">جاري التحميل...</p>
+          <div className="text-center space-y-4 p-8 rounded-xl bg-card/50 backdrop-blur-sm shadow-xl border border-border/50">
+            <Loader2 className="w-16 h-16 animate-spin mx-auto text-primary" />
+            <p className="text-lg text-muted-foreground">جاري التحميل...</p>
           </div>
         </main>
         <Footer />
@@ -474,29 +474,33 @@ export default function Admin() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-primary/5">
         <SEO title="تسجيل الدخول - لوحة التحكم" />
         <Header />
         <main className="flex-1 flex items-center justify-center p-4">
-          <Card className="max-w-md w-full shadow-lg">
-            <CardHeader className="text-center space-y-4">
-              <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-                <Lock className="h-10 w-10 text-primary" />
+          <Card className="max-w-md w-full shadow-2xl border-2 hover:shadow-primary/20 transition-all duration-300">
+            <CardHeader className="text-center space-y-6 pb-8">
+              <div className="mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center ring-4 ring-primary/10 shadow-lg">
+                <Lock className="h-12 w-12 text-primary" />
               </div>
-              <CardTitle className="text-2xl">تسجيل الدخول مطلوب</CardTitle>
-              <CardDescription>
-                يجب تسجيل الدخول للوصول إلى لوحة التحكم
-              </CardDescription>
+              <div className="space-y-2">
+                <CardTitle className="text-3xl font-bold bg-gradient-to-l from-primary to-primary/70 bg-clip-text text-transparent">
+                  تسجيل الدخول مطلوب
+                </CardTitle>
+                <CardDescription className="text-base">
+                  يجب تسجيل الدخول للوصول إلى لوحة التحكم
+                </CardDescription>
+              </div>
             </CardHeader>
-            <CardContent className="text-center space-y-4">
+            <CardContent className="text-center space-y-4 pb-8">
               <Button
                 variant="default"
                 size="lg"
-                className="gap-2 w-full"
+                className="gap-3 w-full shadow-lg hover:shadow-xl transition-all duration-300 text-lg py-6"
                 onClick={() => window.location.href = "/api/auth/google"}
                 data-testid="button-admin-login"
               >
-                <SiGoogle className="h-5 w-5" />
+                <SiGoogle className="h-6 w-6" />
                 تسجيل الدخول بواسطة Google
               </Button>
             </CardContent>
@@ -509,27 +513,29 @@ export default function Admin() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-destructive/5">
         <SEO title="الوصول مرفوض" />
         <Header />
         <main className="flex-1 flex items-center justify-center p-4">
-          <Card className="max-w-md w-full shadow-lg">
-            <CardHeader className="text-center space-y-4">
-              <div className="mx-auto w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center">
-                <XCircle className="h-10 w-10 text-destructive" />
+          <Card className="max-w-md w-full shadow-2xl border-2 border-destructive/20">
+            <CardHeader className="text-center space-y-6 pb-8">
+              <div className="mx-auto w-24 h-24 rounded-full bg-destructive/10 flex items-center justify-center ring-4 ring-destructive/20 shadow-lg">
+                <XCircle className="h-12 w-12 text-destructive" />
               </div>
-              <CardTitle className="text-2xl">الوصول مرفوض</CardTitle>
-              <CardDescription>
-                عذراً، ليس لديك صلاحية الوصول إلى لوحة التحكم
-              </CardDescription>
+              <div className="space-y-2">
+                <CardTitle className="text-3xl font-bold text-destructive">الوصول مرفوض</CardTitle>
+                <CardDescription className="text-base">
+                  عذراً، ليس لديك صلاحية الوصول إلى لوحة التحكم
+                </CardDescription>
+              </div>
             </CardHeader>
-            <CardContent className="text-center space-y-4">
-              <div className="p-4 bg-muted rounded-lg">
+            <CardContent className="text-center space-y-6 pb-8">
+              <div className="p-5 bg-muted rounded-xl border border-border shadow-inner">
                 <p className="text-sm text-muted-foreground">
-                  مسجل الدخول: <span className="font-medium text-foreground">{user.email}</span>
+                  مسجل الدخول: <span className="font-bold text-foreground text-base">{user.email}</span>
                 </p>
               </div>
-              <Button variant="outline" onClick={() => window.location.href = "/"}>
+              <Button variant="outline" size="lg" onClick={() => window.location.href = "/"} className="w-full">
                 العودة للرئيسية
               </Button>
             </CardContent>
@@ -543,60 +549,64 @@ export default function Admin() {
   const FactoryFormDialog = ({ isOpen, onClose, title }: { isOpen: boolean; onClose: () => void; title: string }) => (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl flex items-center gap-2">
-            <Building2 className="w-6 h-6 text-primary" />
+        <DialogHeader className="pb-4 border-b">
+          <DialogTitle className="text-2xl flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Building2 className="w-6 h-6 text-primary" />
+            </div>
             {title}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="pt-2">
             أدخل معلومات المصنع بالتفصيل. الحقول المميزة بـ * إلزامية
           </DialogDescription>
         </DialogHeader>
 
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6 pt-4" onSubmit={handleSubmit}>
           <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="basic">المعلومات الأساسية</TabsTrigger>
-              <TabsTrigger value="contact">التواصل</TabsTrigger>
-              <TabsTrigger value="media">الوسائط</TabsTrigger>
-              <TabsTrigger value="settings">الإعدادات</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4 p-1 bg-muted/50 rounded-lg">
+              <TabsTrigger value="basic" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">المعلومات الأساسية</TabsTrigger>
+              <TabsTrigger value="contact" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">التواصل</TabsTrigger>
+              <TabsTrigger value="media" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">الوسائط</TabsTrigger>
+              <TabsTrigger value="settings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">الإعدادات</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="basic" className="space-y-4 mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <TabsContent value="basic" className="space-y-5 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="nameAr">الاسم بالعربية *</Label>
+                  <Label htmlFor="nameAr" className="text-sm font-semibold">الاسم بالعربية *</Label>
                   <Input
                     id="nameAr"
                     required
                     value={formData.nameAr}
                     onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
                     placeholder="اسم المصنع"
+                    className="h-11 border-2 focus:border-primary transition-colors"
                     data-testid="input-factory-name-ar"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="name">الاسم بالإنجليزية *</Label>
+                  <Label htmlFor="name" className="text-sm font-semibold">الاسم بالإنجليزية *</Label>
                   <Input
                     id="name"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Factory Name"
+                    className="h-11 border-2 focus:border-primary transition-colors"
                     data-testid="input-factory-name-en"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="wilaya">الولاية *</Label>
+                  <Label htmlFor="wilaya" className="text-sm font-semibold">الولاية *</Label>
                   <Select
                     required
                     value={formData.wilaya}
                     onValueChange={(value) => setFormData({ ...formData, wilaya: value })}
                   >
-                    <SelectTrigger id="wilaya" data-testid="select-factory-wilaya">
+                    <SelectTrigger id="wilaya" className="h-11 border-2" data-testid="select-factory-wilaya">
                       <SelectValue placeholder="اختر الولاية" />
                     </SelectTrigger>
                     <SelectContent>
@@ -609,13 +619,13 @@ export default function Admin() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="category">القطاع *</Label>
+                  <Label htmlFor="category" className="text-sm font-semibold">القطاع *</Label>
                   <Select
                     required
                     value={formData.category}
                     onValueChange={(value) => setFormData({ ...formData, category: value })}
                   >
-                    <SelectTrigger id="category" data-testid="select-factory-category">
+                    <SelectTrigger id="category" className="h-11 border-2" data-testid="select-factory-category">
                       <SelectValue placeholder="اختر القطاع" />
                     </SelectTrigger>
                     <SelectContent>
@@ -629,9 +639,9 @@ export default function Admin() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="descriptionAr">الوصف بالعربية *</Label>
+                  <Label htmlFor="descriptionAr" className="text-sm font-semibold">الوصف بالعربية *</Label>
                   <Textarea
                     id="descriptionAr"
                     required
@@ -639,11 +649,12 @@ export default function Admin() {
                     onChange={(e) => setFormData({ ...formData, descriptionAr: e.target.value })}
                     placeholder="وصف المصنع ونشاطه..."
                     rows={5}
+                    className="border-2 focus:border-primary transition-colors resize-none"
                     data-testid="textarea-factory-description-ar"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="description">الوصف بالإنجليزية *</Label>
+                  <Label htmlFor="description" className="text-sm font-semibold">الوصف بالإنجليزية *</Label>
                   <Textarea
                     id="description"
                     required
@@ -651,26 +662,28 @@ export default function Admin() {
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Factory description..."
                     rows={5}
+                    className="border-2 focus:border-primary transition-colors resize-none"
                     data-testid="textarea-factory-description-en"
                   />
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <Label>المنتجات *</Label>
-                  <Button type="button" size="sm" variant="outline" onClick={addProductField}>
-                    <Plus className="w-4 h-4 ml-1" />
+                  <Label className="text-sm font-semibold">المنتجات *</Label>
+                  <Button type="button" size="sm" variant="outline" onClick={addProductField} className="gap-2">
+                    <Plus className="w-4 h-4" />
                     إضافة منتج
                   </Button>
                 </div>
-                <div className="space-y-2 max-h-60 overflow-y-auto">
+                <div className="space-y-3 max-h-64 overflow-y-auto p-1">
                   {formData.productsAr.map((_, index) => (
-                    <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 bg-muted/30 rounded-lg border">
                       <Input
                         value={formData.productsAr[index]}
                         onChange={(e) => updateProductField(index, e.target.value, true)}
                         placeholder="المنتج بالعربية"
+                        className="border-2"
                         data-testid={`input-product-ar-${index}`}
                       />
                       <div className="flex gap-2">
@@ -678,7 +691,7 @@ export default function Admin() {
                           value={formData.products[index]}
                           onChange={(e) => updateProductField(index, e.target.value, false)}
                           placeholder="Product in English"
-                          className="flex-1"
+                          className="flex-1 border-2"
                           data-testid={`input-product-en-${index}`}
                         />
                         {formData.products.length > 1 && (
@@ -687,8 +700,9 @@ export default function Admin() {
                             size="icon"
                             variant="ghost"
                             onClick={() => removeProductField(index)}
+                            className="hover:bg-destructive/10 hover:text-destructive"
                           >
-                            <Trash2 className="w-4 h-4 text-destructive" />
+                            <Trash2 className="w-4 h-4" />
                           </Button>
                         )}
                       </div>
@@ -698,11 +712,11 @@ export default function Admin() {
               </div>
             </TabsContent>
 
-            <TabsContent value="contact" className="space-y-4 mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <TabsContent value="contact" className="space-y-5 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
+                  <Label htmlFor="phone" className="flex items-center gap-2 text-sm font-semibold">
+                    <Phone className="w-4 h-4 text-primary" />
                     الهاتف *
                   </Label>
                   <Input
@@ -711,12 +725,13 @@ export default function Admin() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+213 123 456 789"
+                    className="h-11 border-2 focus:border-primary transition-colors"
                     data-testid="input-factory-phone"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
+                  <Label htmlFor="email" className="flex items-center gap-2 text-sm font-semibold">
+                    <Mail className="w-4 h-4 text-primary" />
                     البريد الإلكتروني *
                   </Label>
                   <Input
@@ -726,15 +741,16 @@ export default function Admin() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="info@factory.dz"
+                    className="h-11 border-2 focus:border-primary transition-colors"
                     data-testid="input-factory-email"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="addressAr" className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
+                  <Label htmlFor="addressAr" className="flex items-center gap-2 text-sm font-semibold">
+                    <MapPin className="w-4 h-4 text-primary" />
                     العنوان بالعربية *
                   </Label>
                   <Input
@@ -743,12 +759,13 @@ export default function Admin() {
                     value={formData.addressAr}
                     onChange={(e) => setFormData({ ...formData, addressAr: e.target.value })}
                     placeholder="العنوان الكامل"
+                    className="h-11 border-2 focus:border-primary transition-colors"
                     data-testid="input-factory-address-ar"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="address" className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
+                  <Label htmlFor="address" className="flex items-center gap-2 text-sm font-semibold">
+                    <MapPin className="w-4 h-4 text-primary" />
                     العنوان بالإنجليزية *
                   </Label>
                   <Input
@@ -757,14 +774,15 @@ export default function Admin() {
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     placeholder="Full address"
+                    className="h-11 border-2 focus:border-primary transition-colors"
                     data-testid="input-factory-address-en"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="latitude">خط العرض (Latitude)</Label>
+                  <Label htmlFor="latitude" className="text-sm font-semibold">خط العرض (Latitude)</Label>
                   <Input
                     id="latitude"
                     value={formData.latitude}
@@ -772,10 +790,11 @@ export default function Admin() {
                     placeholder="36.7538"
                     type="number"
                     step="any"
+                    className="h-11 border-2 focus:border-primary transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="longitude">خط الطول (Longitude)</Label>
+                  <Label htmlFor="longitude" className="text-sm font-semibold">خط الطول (Longitude)</Label>
                   <Input
                     id="longitude"
                     value={formData.longitude}
@@ -783,19 +802,20 @@ export default function Admin() {
                     placeholder="3.0588"
                     type="number"
                     step="any"
+                    className="h-11 border-2 focus:border-primary transition-colors"
                   />
                 </div>
               </div>
             </TabsContent>
 
-            <TabsContent value="media" className="space-y-4 mt-4">
+            <TabsContent value="media" className="space-y-5 mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <Label htmlFor="factoryImage" className="flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4" />
+                  <Label htmlFor="factoryImage" className="flex items-center gap-2 text-sm font-semibold">
+                    <ImageIcon className="w-4 h-4 text-primary" />
                     صورة المصنع
                   </Label>
-                  <div className="border-2 border-dashed rounded-lg p-6 text-center space-y-3 hover:border-primary transition-colors">
+                  <div className="border-2 border-dashed rounded-xl p-8 text-center space-y-4 hover:border-primary hover:bg-primary/5 transition-all duration-300 cursor-pointer">
                     <Input
                       id="factoryImage"
                       type="file"
@@ -804,17 +824,20 @@ export default function Admin() {
                       className="hidden"
                       data-testid="input-factory-image"
                     />
-                    <label htmlFor="factoryImage" className="cursor-pointer">
+                    <label htmlFor="factoryImage" className="cursor-pointer block">
                       {formData.imageUrl ? (
                         <img
                           src={formData.imageUrl}
                           alt="Factory"
-                          className="w-full h-40 object-cover rounded-md mb-2"
+                          className="w-full h-48 object-cover rounded-lg mb-3 shadow-md"
                         />
                       ) : (
-                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                          <Upload className="w-10 h-10" />
-                          <p className="text-sm">انقر لرفع صورة المصنع</p>
+                        <div className="flex flex-col items-center gap-3 text-muted-foreground py-8">
+                          <div className="p-4 rounded-full bg-primary/10">
+                            <Upload className="w-10 h-10 text-primary" />
+                          </div>
+                          <p className="text-sm font-medium">انقر لرفع صورة المصنع</p>
+                          <p className="text-xs text-muted-foreground">PNG, JPG حتى 10MB</p>
                         </div>
                       )}
                     </label>
@@ -822,11 +845,11 @@ export default function Admin() {
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="factoryLogo" className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4" />
+                  <Label htmlFor="factoryLogo" className="flex items-center gap-2 text-sm font-semibold">
+                    <Building2 className="w-4 h-4 text-primary" />
                     شعار المصنع
                   </Label>
-                  <div className="border-2 border-dashed rounded-lg p-6 text-center space-y-3 hover:border-primary transition-colors">
+                  <div className="border-2 border-dashed rounded-xl p-8 text-center space-y-4 hover:border-primary hover:bg-primary/5 transition-all duration-300 cursor-pointer">
                     <Input
                       id="factoryLogo"
                       type="file"
@@ -835,17 +858,20 @@ export default function Admin() {
                       className="hidden"
                       data-testid="input-factory-logo"
                     />
-                    <label htmlFor="factoryLogo" className="cursor-pointer">
+                    <label htmlFor="factoryLogo" className="cursor-pointer block">
                       {formData.logoUrl ? (
                         <img
                           src={formData.logoUrl}
                           alt="Logo"
-                          className="w-full h-40 object-contain rounded-md mb-2"
+                          className="w-full h-48 object-contain rounded-lg mb-3 shadow-md"
                         />
                       ) : (
-                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                          <Upload className="w-10 h-10" />
-                          <p className="text-sm">انقر لرفع شعار المصنع</p>
+                        <div className="flex flex-col items-center gap-3 text-muted-foreground py-8">
+                          <div className="p-4 rounded-full bg-primary/10">
+                            <Upload className="w-10 h-10 text-primary" />
+                          </div>
+                          <p className="text-sm font-medium">انقر لرفع شعار المصنع</p>
+                          <p className="text-xs text-muted-foreground">PNG, JPG حتى 10MB</p>
                         </div>
                       )}
                     </label>
@@ -854,19 +880,19 @@ export default function Admin() {
               </div>
             </TabsContent>
 
-            <TabsContent value="settings" className="space-y-4 mt-4">
-              <Card>
-                <CardHeader>
+            <TabsContent value="settings" className="space-y-5 mt-6">
+              <Card className="border-2">
+                <CardHeader className="bg-muted/30">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
+                    <Settings className="w-5 h-5 text-primary" />
                     إعدادات المصنع
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="space-y-1">
-                      <Label htmlFor="verified" className="flex items-center gap-2 font-medium">
-                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                <CardContent className="space-y-5 pt-6">
+                  <div className="flex items-center justify-between p-5 border-2 rounded-xl hover:bg-muted/30 transition-colors">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="verified" className="flex items-center gap-2 font-semibold text-base">
+                        <CheckCircle2 className="w-5 h-5 text-green-600" />
                         مصنع موثق
                       </Label>
                       <p className="text-sm text-muted-foreground">
@@ -877,15 +903,16 @@ export default function Admin() {
                       id="verified"
                       checked={formData.verified}
                       onCheckedChange={(checked) => setFormData({ ...formData, verified: checked })}
+                      className="scale-110"
                     />
                   </div>
 
-                  <div className="p-4 bg-muted rounded-lg space-y-2">
-                    <h4 className="font-medium flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 text-primary" />
+                  <div className="p-5 bg-blue-50 dark:bg-blue-950/20 rounded-xl border-2 border-blue-200 dark:border-blue-900 space-y-2.5">
+                    <h4 className="font-semibold flex items-center gap-2 text-blue-900 dark:text-blue-100">
+                      <AlertCircle className="w-5 h-5" />
                       ملاحظة هامة
                     </h4>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
                       تأكد من صحة جميع المعلومات قبل الحفظ. المعلومات الخاطئة قد تؤثر على مصداقية المنصة.
                     </p>
                   </div>
@@ -894,26 +921,30 @@ export default function Admin() {
             </TabsContent>
           </Tabs>
 
-          <div className="flex justify-end gap-2 pt-4 border-t">
+          <div className="flex justify-end gap-3 pt-6 border-t-2">
             <Button
               type="button"
               variant="outline"
+              size="lg"
               onClick={() => {
                 onClose();
                 resetForm();
                 setSelectedFactory(null);
               }}
               data-testid="button-cancel"
+              className="px-8"
             >
               إلغاء
             </Button>
             <Button
               type="submit"
+              size="lg"
               disabled={createMutation.isPending || updateMutation.isPending || imageUploading}
               data-testid="button-save-factory"
+              className="px-8 shadow-lg"
             >
               {(createMutation.isPending || updateMutation.isPending || imageUploading) && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               )}
               {imageUploading
                 ? "جاري الرفع..."
@@ -928,150 +959,168 @@ export default function Admin() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/10">
       <SEO title="لوحة الإدارة - دليل المصانع الجزائري" />
       <Header />
 
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-primary to-primary/80 py-8 shadow-md">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl font-bold text-primary-foreground flex items-center gap-3">
-                <Building2 className="w-8 h-8" />
+      <div className="bg-gradient-to-l from-primary via-primary to-primary/90 py-10 shadow-2xl relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"></div>
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-3 text-center md:text-right">
+              <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground flex items-center gap-4 justify-center md:justify-start">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <Building2 className="w-10 h-10" />
+                </div>
                 لوحة الإدارة المتقدمة
               </h1>
-              <p className="text-primary-foreground/90 flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                مرحباً، {user.email}
+              <p className="text-primary-foreground/95 flex items-center gap-2 text-lg justify-center md:justify-start">
+                <Users className="w-5 h-5" />
+                مرحباً، <span className="font-bold">{user.email}</span>
               </p>
             </div>
             <Button
               variant="secondary"
+              size="lg"
               onClick={() => {
                 resetForm();
                 setIsAddDialogOpen(true);
               }}
               data-testid="button-add-factory"
-              className="gap-2"
+              className="gap-3 shadow-2xl hover:shadow-primary/20 text-lg px-8 py-6 transition-all duration-300 hover:scale-105"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-6 h-6" />
               إضافة مصنع جديد
             </Button>
           </div>
         </div>
       </div>
 
-      <section className="max-w-7xl mx-auto px-4 py-8 flex-1 space-y-6">
+      <section className="max-w-7xl mx-auto px-4 py-10 flex-1 space-y-8">
         {/* إحصائيات متقدمة */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="hover-elevate">
-            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">إجمالي المصانع</CardTitle>
-              <Building2 className="w-5 h-5 text-primary" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="hover-elevate border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-xl overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16"></div>
+            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-3 relative">
+              <CardTitle className="text-sm font-semibold text-muted-foreground">إجمالي المصانع</CardTitle>
+              <div className="p-3 bg-primary/10 rounded-xl">
+                <Building2 className="w-6 h-6 text-primary" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-primary">{stats.total}</div>
-              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" />
+            <CardContent className="relative">
+              <div className="text-4xl font-bold text-primary mb-2">{stats.total}</div>
+              <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5 text-green-600" />
                 مصنع مسجل في النظام
               </p>
             </CardContent>
           </Card>
 
-          <Card className="hover-elevate">
-            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">مصانع موثقة</CardTitle>
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
+          <Card className="hover-elevate border-2 hover:border-green-500/50 transition-all duration-300 hover:shadow-xl overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16"></div>
+            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-3 relative">
+              <CardTitle className="text-sm font-semibold text-muted-foreground">مصانع موثقة</CardTitle>
+              <div className="p-3 bg-green-100 dark:bg-green-950 rounded-xl">
+                <CheckCircle2 className="w-6 h-6 text-green-600" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-600">{stats.verified}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {((stats.verified / stats.total) * 100).toFixed(0)}% من الإجمالي
+            <CardContent className="relative">
+              <div className="text-4xl font-bold text-green-600 mb-2">{stats.verified}</div>
+              <p className="text-xs text-muted-foreground">
+                <span className="font-bold text-green-600">{((stats.verified / stats.total) * 100).toFixed(0)}%</span> من الإجمالي
               </p>
             </CardContent>
           </Card>
 
-          <Card className="hover-elevate">
-            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">قيد المراجعة</CardTitle>
-              <AlertCircle className="w-5 h-5 text-orange-500" />
+          <Card className="hover-elevate border-2 hover:border-orange-500/50 transition-all duration-300 hover:shadow-xl overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -mr-16 -mt-16"></div>
+            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-3 relative">
+              <CardTitle className="text-sm font-semibold text-muted-foreground">قيد المراجعة</CardTitle>
+              <div className="p-3 bg-orange-100 dark:bg-orange-950 rounded-xl">
+                <AlertCircle className="w-6 h-6 text-orange-500" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-orange-500">{stats.pending}</div>
-              <p className="text-xs text-muted-foreground mt-1">
+            <CardContent className="relative">
+              <div className="text-4xl font-bold text-orange-500 mb-2">{stats.pending}</div>
+              <p className="text-xs text-muted-foreground">
                 تحتاج إلى مراجعة وتوثيق
               </p>
             </CardContent>
           </Card>
 
-          <Card className="hover-elevate">
-            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">إجمالي الزيارات</CardTitle>
-              <Eye className="w-5 h-5 text-blue-600" />
+          <Card className="hover-elevate border-2 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16"></div>
+            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-3 relative">
+              <CardTitle className="text-sm font-semibold text-muted-foreground">إجمالي الزيارات</CardTitle>
+              <div className="p-3 bg-blue-100 dark:bg-blue-950 rounded-xl">
+                <Eye className="w-6 h-6 text-blue-600" />
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-600">
+            <CardContent className="relative">
+              <div className="text-4xl font-bold text-blue-600 mb-2">
                 {stats.totalViews.toLocaleString()}
               </div>
-              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                متوسط التقييم: {stats.avgRating}
+              <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                متوسط التقييم: <span className="font-bold text-yellow-600">{stats.avgRating}</span>
               </p>
             </CardContent>
           </Card>
         </div>
 
         {/* Tabs الرئيسية */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5">
-            <TabsTrigger value="list" className="gap-2">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 p-1.5 bg-muted rounded-xl h-auto">
+            <TabsTrigger value="list" className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all">
               <Building2 className="w-4 h-4" />
-              قائمة المصانع
+              <span className="hidden sm:inline">قائمة المصانع</span>
             </TabsTrigger>
-            <TabsTrigger value="stats" className="gap-2">
+            <TabsTrigger value="stats" className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all">
               <BarChart3 className="w-4 h-4" />
-              الإحصائيات
+              <span className="hidden sm:inline">الإحصائيات</span>
             </TabsTrigger>
-            <TabsTrigger value="pending" className="gap-2">
+            <TabsTrigger value="pending" className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all">
               <AlertCircle className="w-4 h-4" />
-              قيد المراجعة
+              <span className="hidden sm:inline">قيد المراجعة</span>
               {stats.pending > 0 && (
-                <Badge variant="destructive" className="ml-1">
+                <Badge variant="destructive" className="ml-1 px-2 py-0.5 text-xs">
                   {stats.pending}
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="verified" className="gap-2">
+            <TabsTrigger value="verified" className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all">
               <CheckCircle2 className="w-4 h-4" />
-              المصانع الموثقة
+              <span className="hidden sm:inline">المصانع الموثقة</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="gap-2">
+            <TabsTrigger value="settings" className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all">
               <Settings className="w-4 h-4" />
-              الإعدادات
+              <span className="hidden sm:inline">الإعدادات</span>
             </TabsTrigger>
           </TabsList>
 
           {/* قائمة المصانع */}
-          <TabsContent value="list" className="space-y-4">
-            <Card>
-              <CardHeader>
+          <TabsContent value="list" className="space-y-6">
+            <Card className="border-2 shadow-xl">
+              <CardHeader className="bg-gradient-to-l from-muted/50 to-muted/30 border-b-2">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
-                    <CardTitle className="text-xl flex items-center gap-2">
-                      <Package className="w-5 h-5" />
+                    <CardTitle className="text-2xl flex items-center gap-3">
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <Package className="w-6 h-6 text-primary" />
+                      </div>
                       جميع المصانع ({filteredAndSortedFactories.length})
                     </CardTitle>
-                    <CardDescription className="mt-1">
+                    <CardDescription className="mt-2 text-base">
                       إدارة شاملة لجميع المصانع المسجلة
                     </CardDescription>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setShowFilters(!showFilters)}
-                      className="gap-2"
+                      className="gap-2 border-2 hover:bg-primary/10"
                     >
                       <Filter className="w-4 h-4" />
                       {showFilters ? "إخفاء الفلاتر" : "إظهار الفلاتر"}
@@ -1080,7 +1129,7 @@ export default function Admin() {
                       variant="outline"
                       size="sm"
                       onClick={exportToCSV}
-                      className="gap-2"
+                      className="gap-2 border-2 hover:bg-green-50 dark:hover:bg-green-950"
                     >
                       <Download className="w-4 h-4" />
                       تصدير CSV
@@ -1089,7 +1138,7 @@ export default function Admin() {
                       variant="outline"
                       size="sm"
                       onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/factories"] })}
-                      className="gap-2"
+                      className="gap-2 border-2 hover:bg-blue-50 dark:hover:bg-blue-950"
                     >
                       <RefreshCw className="w-4 h-4" />
                       تحديث
@@ -1097,27 +1146,27 @@ export default function Admin() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-5 pt-6">
                 {/* البحث والفلاتر */}
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="relative">
-                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                     <Input
                       placeholder="ابحث عن مصنع بالاسم، الولاية، أو القطاع..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pr-10"
+                      className="pr-12 h-12 border-2 text-base focus:border-primary transition-colors"
                       data-testid="input-admin-search"
                     />
                   </div>
 
                   {showFilters && (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-4 bg-muted rounded-lg">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 bg-gradient-to-br from-muted/50 to-muted/30 rounded-xl border-2 shadow-inner">
                       <Select
                         value={filters.wilaya}
                         onValueChange={(value) => setFilters({ ...filters, wilaya: value })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="h-11 border-2 bg-background">
                           <SelectValue placeholder="كل الولايات" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1134,7 +1183,7 @@ export default function Admin() {
                         value={filters.category}
                         onValueChange={(value) => setFilters({ ...filters, category: value })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="h-11 border-2 bg-background">
                           <SelectValue placeholder="كل القطاعات" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1151,7 +1200,7 @@ export default function Admin() {
                         value={filters.verified}
                         onValueChange={(value) => setFilters({ ...filters, verified: value })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="h-11 border-2 bg-background">
                           <SelectValue placeholder="حالة التوثيق" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1162,7 +1211,7 @@ export default function Admin() {
                       </Select>
 
                       <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                        <SelectTrigger>
+                        <SelectTrigger className="h-11 border-2 bg-background">
                           <SelectValue placeholder="ترتيب حسب" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1178,95 +1227,97 @@ export default function Admin() {
 
                 {/* الجدول */}
                 {isLoadingFactories ? (
-                  <div className="text-center py-12">
-                    <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-primary" />
-                    <p className="text-muted-foreground">جاري تحميل المصانع...</p>
+                  <div className="text-center py-16">
+                    <Loader2 className="w-16 h-16 animate-spin mx-auto mb-4 text-primary" />
+                    <p className="text-lg text-muted-foreground">جاري تحميل المصانع...</p>
                   </div>
                 ) : filteredAndSortedFactories.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Building2 className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-lg font-medium mb-2">لا توجد نتائج</p>
+                  <div className="text-center py-16">
+                    <Building2 className="w-20 h-20 mx-auto mb-4 text-muted-foreground/50" />
+                    <p className="text-xl font-medium mb-2">لا توجد نتائج</p>
                     <p className="text-sm text-muted-foreground">جرب تعديل معايير البحث أو الفلتر</p>
                   </div>
                 ) : (
-                  <div className="border rounded-md">
+                  <div className="border-2 rounded-xl overflow-hidden shadow-lg">
                     <Table>
                       <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-right">المصنع</TableHead>
-                          <TableHead className="text-right">الولاية</TableHead>
-                          <TableHead className="text-right">القطاع</TableHead>
-                          <TableHead className="text-center">الحالة</TableHead>
-                          <TableHead className="text-center">التقييم</TableHead>
-                          <TableHead className="text-center">الزيارات</TableHead>
-                          <TableHead className="text-center">الإجراءات</TableHead>
+                        <TableRow className="bg-muted/50 hover:bg-muted/50">
+                          <TableHead className="text-right font-bold">المصنع</TableHead>
+                          <TableHead className="text-right font-bold">الولاية</TableHead>
+                          <TableHead className="text-right font-bold">القطاع</TableHead>
+                          <TableHead className="text-center font-bold">الحالة</TableHead>
+                          <TableHead className="text-center font-bold">التقييم</TableHead>
+                          <TableHead className="text-center font-bold">الزيارات</TableHead>
+                          <TableHead className="text-center font-bold">الإجراءات</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {filteredAndSortedFactories.map((factory) => (
-                          <TableRow key={factory.id} className="hover:bg-muted/50">
+                          <TableRow key={factory.id} className="hover:bg-muted/30 transition-colors">
                             <TableCell className="font-medium">
                               <div className="flex items-center gap-3">
                                 {factory.logoUrl && (
                                   <img
                                     src={factory.logoUrl}
                                     alt={factory.nameAr}
-                                    className="w-10 h-10 object-contain rounded"
+                                    className="w-12 h-12 object-contain rounded-lg border-2 p-1"
                                   />
                                 )}
                                 <div>
-                                  <p className="font-medium">{factory.nameAr}</p>
+                                  <p className="font-bold text-base">{factory.nameAr}</p>
                                   <p className="text-xs text-muted-foreground">{factory.name}</p>
                                 </div>
                               </div>
                             </TableCell>
-                            <TableCell>{factory.wilaya}</TableCell>
-                            <TableCell>
+                            <TableCell className="font-medium">{factory.wilaya}</TableCell>
+                            <TableCell className="font-medium">
                               {categories.find(c => c.id === factory.category)?.nameAr}
                             </TableCell>
                             <TableCell className="text-center">
                               {factory.verified ? (
-                                <Badge variant="default" className="gap-1">
-                                  <CheckCircle2 className="w-3 h-3" />
+                                <Badge variant="default" className="gap-1.5 px-3 py-1">
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
                                   موثق
                                 </Badge>
                               ) : (
-                                <Badge variant="secondary" className="gap-1">
-                                  <AlertCircle className="w-3 h-3" />
+                                <Badge variant="secondary" className="gap-1.5 px-3 py-1">
+                                  <AlertCircle className="w-3.5 h-3.5" />
                                   قيد المراجعة
                                 </Badge>
                               )}
                             </TableCell>
                             <TableCell className="text-center">
-                              <div className="flex items-center justify-center gap-1">
+                              <div className="flex items-center justify-center gap-1.5">
                                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                <span>{factory.rating?.toFixed(1) || "0.0"}</span>
+                                <span className="font-bold">{factory.rating?.toFixed(1) || "0.0"}</span>
                               </div>
                             </TableCell>
                             <TableCell className="text-center">
-                              <div className="flex items-center justify-center gap-1">
-                                <Eye className="w-4 h-4 text-muted-foreground" />
-                                <span>{factory.viewsCount || 0}</span>
+                              <div className="flex items-center justify-center gap-1.5">
+                                <Eye className="w-4 h-4 text-blue-600" />
+                                <span className="font-bold">{factory.viewsCount || 0}</span>
                               </div>
                             </TableCell>
                             <TableCell>
-                              <div className="flex justify-center gap-2">
+                              <div className="flex justify-center gap-1.5">
                                 <Button
                                   size="icon"
                                   variant="ghost"
                                   onClick={() => handleEdit(factory)}
                                   data-testid={`button-edit-${factory.id}`}
                                   title="تعديل"
+                                  className="hover:bg-blue-100 dark:hover:bg-blue-950 hover:text-blue-600"
                                 >
-                                  <Edit className="w-4 h-4 text-blue-600" />
+                                  <Edit className="w-4 h-4" />
                                 </Button>
                                 <Button
                                   size="icon"
                                   variant="ghost"
                                   onClick={() => window.open(`/factory/${factory.id}`, '_blank')}
                                   title="عرض"
+                                  className="hover:bg-green-100 dark:hover:bg-green-950 hover:text-green-600"
                                 >
-                                  <Eye className="w-4 h-4 text-green-600" />
+                                  <Eye className="w-4 h-4" />
                                 </Button>
                                 <Button
                                   size="icon"
@@ -1274,8 +1325,9 @@ export default function Admin() {
                                   onClick={() => handleDelete(factory)}
                                   data-testid={`button-delete-${factory.id}`}
                                   title="حذف"
+                                  className="hover:bg-red-100 dark:hover:bg-red-950 hover:text-destructive"
                                 >
-                                  <Trash2 className="w-4 h-4 text-destructive" />
+                                  <Trash2 className="w-4 h-4" />
                                 </Button>
                               </div>
                             </TableCell>
@@ -1290,60 +1342,64 @@ export default function Admin() {
           </TabsContent>
 
           {/* الإحصائيات */}
-          <TabsContent value="stats" className="space-y-4">
+          <TabsContent value="stats" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-primary" />
+              <Card className="border-2 shadow-xl">
+                <CardHeader className="bg-gradient-to-l from-muted/50 to-muted/30 border-b-2">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <MapPin className="w-5 h-5 text-primary" />
+                    </div>
                     التوزيع الجغرافي
                   </CardTitle>
-                  <CardDescription>أعلى 5 ولايات من حيث عدد المصانع</CardDescription>
+                  <CardDescription className="text-base">أعلى 5 ولايات من حيث عدد المصانع</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
                     {stats.topWilayas.map(([wilaya, count], index) => (
-                      <div key={wilaya} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                      <div key={wilaya} className="flex items-center justify-between p-4 bg-gradient-to-l from-muted/40 to-muted/20 rounded-xl border-2 hover:border-primary/50 transition-all">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-sm font-bold text-primary-foreground shadow-lg">
                             {index + 1}
                           </div>
                           <div>
-                            <p className="font-medium">{wilaya}</p>
+                            <p className="font-bold text-base">{wilaya}</p>
                             <p className="text-xs text-muted-foreground">{count} مصنع</p>
                           </div>
                         </div>
-                        <div className="text-2xl font-bold text-primary">{count}</div>
+                        <div className="text-3xl font-bold text-primary">{count}</div>
                       </div>
                     ))}
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Package className="w-5 h-5 text-primary" />
+              <Card className="border-2 shadow-xl">
+                <CardHeader className="bg-gradient-to-l from-muted/50 to-muted/30 border-b-2">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Package className="w-5 h-5 text-primary" />
+                    </div>
                     التوزيع القطاعي
                   </CardTitle>
-                  <CardDescription>أعلى 5 قطاعات من حيث عدد المصانع</CardDescription>
+                  <CardDescription className="text-base">أعلى 5 قطاعات من حيث عدد المصانع</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
                     {stats.topCategories.map(([category, count], index) => {
                       const cat = categories.find(c => c.id === category);
                       return (
-                        <div key={category} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                        <div key={category} className="flex items-center justify-between p-4 bg-gradient-to-l from-muted/40 to-muted/20 rounded-xl border-2 hover:border-primary/50 transition-all">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-sm font-bold text-primary-foreground shadow-lg">
                               {index + 1}
                             </div>
                             <div>
-                              <p className="font-medium">{cat?.nameAr || category}</p>
+                              <p className="font-bold text-base">{cat?.nameAr || category}</p>
                               <p className="text-xs text-muted-foreground">{count} مصنع</p>
                             </div>
                           </div>
-                          <div className="text-2xl font-bold text-primary">{count}</div>
+                          <div className="text-3xl font-bold text-primary">{count}</div>
                         </div>
                       );
                     })}
@@ -1354,39 +1410,41 @@ export default function Admin() {
           </TabsContent>
 
           {/* قيد المراجعة */}
-          <TabsContent value="pending" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-orange-500" />
+          <TabsContent value="pending" className="space-y-6">
+            <Card className="border-2 shadow-xl">
+              <CardHeader className="bg-gradient-to-l from-orange-50 dark:from-orange-950/20 to-orange-50/50 dark:to-orange-950/10 border-b-2">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <div className="p-2 bg-orange-100 dark:bg-orange-950 rounded-lg">
+                    <AlertCircle className="w-5 h-5 text-orange-500" />
+                  </div>
                   المصانع قيد المراجعة
                 </CardTitle>
-                <CardDescription>
-                  المصانع التي تحتاج إلى مراجعة وتوثيق ({stats.pending})
+                <CardDescription className="text-base">
+                  المصانع التي تحتاج إلى مراجعة وتوثيق (<span className="font-bold text-orange-600">{stats.pending}</span>)
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 {factories.filter(f => !f.verified).length === 0 ? (
-                  <div className="text-center py-12">
-                    <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-green-600" />
-                    <p className="text-lg font-medium">رائع! لا توجد مصانع قيد المراجعة</p>
+                  <div className="text-center py-16">
+                    <CheckCircle2 className="w-20 h-20 mx-auto mb-4 text-green-600" />
+                    <p className="text-xl font-bold text-green-600">رائع! لا توجد مصانع قيد المراجعة</p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {factories
                       .filter(f => !f.verified)
                       .map((factory) => (
-                        <div key={factory.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50">
-                          <div className="flex items-center gap-3">
+                        <div key={factory.id} className="flex items-center justify-between p-5 border-2 rounded-xl hover:bg-muted/30 hover:border-primary/50 transition-all">
+                          <div className="flex items-center gap-4">
                             {factory.logoUrl && (
                               <img
                                 src={factory.logoUrl}
                                 alt={factory.nameAr}
-                                className="w-12 h-12 object-contain rounded"
+                                className="w-14 h-14 object-contain rounded-lg border-2 p-1.5"
                               />
                             )}
                             <div>
-                              <p className="font-medium">{factory.nameAr}</p>
+                              <p className="font-bold text-base">{factory.nameAr}</p>
                               <p className="text-sm text-muted-foreground">
                                 {factory.wilaya} • {categories.find(c => c.id === factory.category)?.nameAr}
                               </p>
@@ -1397,8 +1455,9 @@ export default function Admin() {
                               size="sm"
                               variant="default"
                               onClick={() => handleEdit(factory)}
+                              className="gap-2 shadow-lg"
                             >
-                              <Edit className="w-4 h-4 ml-1" />
+                              <Edit className="w-4 h-4" />
                               مراجعة وتوثيق
                             </Button>
                           </div>
@@ -1411,35 +1470,37 @@ export default function Admin() {
           </TabsContent>
 
           {/* المصانع الموثقة */}
-          <TabsContent value="verified" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
+          <TabsContent value="verified" className="space-y-6">
+            <Card className="border-2 shadow-xl">
+              <CardHeader className="bg-gradient-to-l from-green-50 dark:from-green-950/20 to-green-50/50 dark:to-green-950/10 border-b-2">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <div className="p-2 bg-green-100 dark:bg-green-950 rounded-lg">
+                    <CheckCircle2 className="w-5 h-5 text-green-600" />
+                  </div>
                   المصانع الموثقة
                 </CardTitle>
-                <CardDescription>
-                  المصانع المعتمدة والموثقة ({stats.verified})
+                <CardDescription className="text-base">
+                  المصانع المعتمدة والموثقة (<span className="font-bold text-green-600">{stats.verified}</span>)
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
+              <CardContent className="pt-6">
+                <div className="space-y-4">
                   {factories
                     .filter(f => f.verified)
                     .map((factory) => (
-                      <div key={factory.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50">
-                        <div className="flex items-center gap-3">
+                      <div key={factory.id} className="flex items-center justify-between p-5 border-2 rounded-xl hover:bg-muted/30 hover:border-primary/50 transition-all">
+                        <div className="flex items-center gap-4">
                           {factory.logoUrl && (
                             <img
                               src={factory.logoUrl}
                               alt={factory.nameAr}
-                              className="w-12 h-12 object-contain rounded"
+                              className="w-14 h-14 object-contain rounded-lg border-2 p-1.5"
                             />
                           )}
                           <div>
                             <div className="flex items-center gap-2">
-                              <p className="font-medium">{factory.nameAr}</p>
-                              <Badge variant="default" className="text-xs">
+                              <p className="font-bold text-base">{factory.nameAr}</p>
+                              <Badge variant="default" className="text-xs px-2 py-0.5">
                                 <CheckCircle2 className="w-3 h-3 ml-1" />
                                 موثق
                               </Badge>
@@ -1449,14 +1510,14 @@ export default function Admin() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-6 text-sm font-medium">
+                          <div className="flex items-center gap-1.5">
                             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            {factory.rating?.toFixed(1) || "0.0"}
+                            <span className="font-bold">{factory.rating?.toFixed(1) || "0.0"}</span>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Eye className="w-4 h-4" />
-                            {factory.viewsCount || 0}
+                          <div className="flex items-center gap-1.5">
+                            <Eye className="w-4 h-4 text-blue-600" />
+                            <span className="font-bold">{factory.viewsCount || 0}</span>
                           </div>
                         </div>
                       </div>
@@ -1467,53 +1528,55 @@ export default function Admin() {
           </TabsContent>
 
           {/* الإعدادات */}
-          <TabsContent value="settings" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5" />
+          <TabsContent value="settings" className="space-y-6">
+            <Card className="border-2 shadow-xl">
+              <CardHeader className="bg-gradient-to-l from-muted/50 to-muted/30 border-b-2">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Settings className="w-5 h-5 text-primary" />
+                  </div>
                   إعدادات النظام
                 </CardTitle>
-                <CardDescription>إعدادات عامة للوحة التحكم</CardDescription>
+                <CardDescription className="text-base">إعدادات عامة للوحة التحكم</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <h3 className="font-medium">معلومات الحساب</h3>
+              <CardContent className="space-y-8 pt-6">
+                <div className="space-y-5">
+                  <h3 className="font-bold text-lg">معلومات الحساب</h3>
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between p-5 bg-gradient-to-l from-muted/40 to-muted/20 rounded-xl border-2">
+                      <span className="text-sm font-bold">البريد الإلكتروني</span>
+                      <span className="text-sm text-muted-foreground font-medium">{user.email}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-5 bg-gradient-to-l from-muted/40 to-muted/20 rounded-xl border-2">
+                      <span className="text-sm font-bold">صلاحيات الإدارة</span>
+                      <Badge variant="default" className="px-3 py-1">مدير</Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-5">
+                  <h3 className="font-bold text-lg">أدوات التصدير</h3>
                   <div className="grid gap-3">
-                    <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                      <span className="text-sm font-medium">البريد الإلكتروني</span>
-                      <span className="text-sm text-muted-foreground">{user.email}</span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                      <span className="text-sm font-medium">صلاحيات الإدارة</span>
-                      <Badge variant="default">مدير</Badge>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="font-medium">أدوات التصدير</h3>
-                  <div className="grid gap-2">
-                    <Button variant="outline" onClick={exportToCSV} className="justify-start gap-2">
-                      <Download className="w-4 h-4" />
-                      تصدير جميع المصانع (CSV)
+                    <Button variant="outline" onClick={exportToCSV} className="justify-start gap-3 h-12 border-2 hover:bg-green-50 dark:hover:bg-green-950">
+                      <Download className="w-5 h-5" />
+                      <span className="font-medium">تصدير جميع المصانع (CSV)</span>
                     </Button>
-                    <Button variant="outline" className="justify-start gap-2" disabled>
-                      <FileText className="w-4 h-4" />
-                      تصدير تقرير PDF (قريباً)
+                    <Button variant="outline" className="justify-start gap-3 h-12 border-2" disabled>
+                      <FileText className="w-5 h-5" />
+                      <span className="font-medium">تصدير تقرير PDF (قريباً)</span>
                     </Button>
                   </div>
                 </div>
 
-                <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg space-y-2">
-                  <h3 className="font-medium text-destructive flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4" />
+                <div className="p-6 bg-gradient-to-br from-destructive/10 to-destructive/5 border-2 border-destructive/30 rounded-xl space-y-4">
+                  <h3 className="font-bold text-lg text-destructive flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5" />
                     منطقة خطرة
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     العمليات هنا لا يمكن التراجع عنها. تأكد من فهمك للعواقب.
                   </p>
-                  <Button variant="destructive" size="sm" disabled>
+                  <Button variant="destructive" size="sm" disabled className="shadow-lg">
                     حذف جميع البيانات
                   </Button>
                 </div>
@@ -1544,36 +1607,39 @@ export default function Admin() {
       />
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="border-2 border-destructive/20">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-destructive" />
+            <AlertDialogTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 bg-destructive/10 rounded-lg">
+                <AlertCircle className="w-6 h-6 text-destructive" />
+              </div>
               هل أنت متأكد تماماً؟
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
+            <AlertDialogDescription className="space-y-3 text-base pt-2">
               <p>
-                سيتم حذف المصنع <span className="font-bold">"{selectedFactory?.nameAr}"</span> نهائياً من النظام.
+                سيتم حذف المصنع <span className="font-bold text-foreground">"{selectedFactory?.nameAr}"</span> نهائياً من النظام.
               </p>
-              <p className="text-destructive font-medium">
-                ⚠️ هذا الإجراء لا يمكن التراجع عنه!
+              <p className="text-destructive font-bold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                هذا الإجراء لا يمكن التراجع عنه!
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel className="border-2">إلغاء</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => selectedFactory && deleteMutation.mutate(selectedFactory.id)}
               disabled={deleteMutation.isPending}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 gap-2 shadow-lg"
             >
               {deleteMutation.isPending ? (
                 <>
-                  <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   جاري الحذف...
                 </>
               ) : (
                 <>
-                  <Trash2 className="w-4 h-4 ml-2" />
+                  <Trash2 className="w-4 h-4" />
                   نعم، احذف نهائياً
                 </>
               )}
