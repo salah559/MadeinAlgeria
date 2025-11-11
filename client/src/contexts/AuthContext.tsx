@@ -45,19 +45,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function verifyAndFetchUser(fbUser: FirebaseUser) {
     try {
-      const token = await fbUser.getIdToken();
-      const response = await apiRequest("POST", "/api/auth/verify", { token });
-      
+      const token = await fbUser.getIdToken(true); // Force refresh
+
+      console.log("🔑 Verifying user with token...");
+
+      const response = await fetch("/api/auth/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ token }),
+        credentials: "include",
+      });
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-        console.error("Failed to verify user:", errorData);
+        const errorData = await response.json().catch(() => ({}));
+        console.error("❌ Verification failed:", errorData);
         throw new Error(errorData.error || "Failed to verify user");
       }
-      
+
       const userData = await response.json();
+      console.log("✅ User verified successfully:", userData.email);
       setUser(userData);
+      return userData;
     } catch (error) {
-      console.error("Error verifying user:", error);
+      console.error("❌ Error verifying user:", error);
       setUser(null);
       throw error;
     }
@@ -65,16 +78,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+      console.log("🔄 Auth state changed:", fbUser ? "Logged in" : "Logged out");
+
       setFirebaseUser(fbUser);
+
       if (fbUser) {
-        await verifyAndFetchUser(fbUser);
+        try {
+          await verifyAndFetchUser(fbUser);
+        } catch (error) {
+          console.error("❌ Error in auth state change:", error);
+          setUser(null);
+        }
       } else {
         setUser(null);
       }
+
       setIsLoading(false);
     });
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
 
   async function signInWithGoogle() {

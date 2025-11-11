@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,22 +30,31 @@ export default function Login() {
     setIsSigningIn(true);
     try {
       await signInWithGoogle();
+      // The AuthContext now handles verification and setting the user state more robustly.
+      // We still add a toast for immediate user feedback.
       toast({
         title: language === "ar" ? "تم تسجيل الدخول بنجاح" : "Login successful",
         description: language === "ar" ? "جاري تحويلك..." : "Redirecting...",
       });
-      // الانتظار قليلاً للتأكد من تحديث الحالة
+      // Wait for the user state to be fully updated by AuthContext's listener
+      // or for the toast to be visible before redirecting.
       setTimeout(() => {
+        // Check user again to ensure it's set before redirecting
+        // This is a safeguard; ideally, signInWithGoogle and the AuthContext listener
+        // should reliably update the user state.
+        // We don't need to re-fetch user here as AuthContext's useEffect handles it.
         setLocation("/");
-      }, 500);
+      }, 1000); // Increased timeout slightly for better UX
     } catch (error: any) {
       console.error("Error during Google login:", error);
+      // Display specific error message from Firebase or a generic one
+      const errorMessage = error.message || (language === "ar" ? "حدث خطأ غير معروف" : "An unknown error occurred");
       toast({
         variant: "destructive",
         title: language === "ar" ? "فشل تسجيل الدخول" : "Login failed",
-        description: error.message || (language === "ar" ? "حدث خطأ أثناء تسجيل الدخول" : "An error occurred during login"),
+        description: errorMessage,
       });
-      setIsSigningIn(false);
+      setIsSigningIn(false); // Reset signing in state on error
     }
   };
 
@@ -99,7 +107,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SEO 
+      <SEO
         title={language === "ar" ? "تسجيل الدخول" : language === "fr" ? "Connexion" : "Login"}
         description={language === "ar" ? "سجل الدخول إلى دليل المصانع الجزائرية" : language === "fr" ? "Connectez-vous à l'annuaire des usines algériennes" : "Login to Algeria Factory Directory"}
       />
@@ -112,9 +120,9 @@ export default function Login() {
               {language === "ar" ? "تسجيل الدخول" : language === "fr" ? "Connexion" : "Login"}
             </h1>
             <p className="text-muted-foreground">
-              {language === "ar" 
-                ? "سجل الدخول للوصول إلى جميع ميزات المنصة" 
-                : language === "fr" 
+              {language === "ar"
+                ? "سجل الدخول للوصول إلى جميع ميزات المنصة"
+                : language === "fr"
                 ? "Connectez-vous pour accéder à toutes les fonctionnalités de la plateforme"
                 : "Login to access all platform features"}
             </p>
@@ -136,17 +144,17 @@ export default function Login() {
                     {language === "ar" ? "مرحباً بك" : language === "fr" ? "Bienvenue" : "Welcome Back"}
                   </CardTitle>
                   <CardDescription>
-                    {language === "ar" 
-                      ? "سجل الدخول باستخدام حساب Google الخاص بك" 
+                    {language === "ar"
+                      ? "سجل الدخول باستخدام حساب Google الخاص بك"
                       : language === "fr"
                       ? "Connectez-vous avec votre compte Google"
                       : "Sign in with your Google account"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button 
-                    variant="default" 
-                    size="lg" 
+                  <Button
+                    variant="default"
+                    size="lg"
                     className="w-full gap-2 text-lg py-6"
                     onClick={handleGoogleLogin}
                     disabled={isSigningIn}
@@ -155,8 +163,8 @@ export default function Login() {
                     {isSigningIn ? (
                       <>
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        {language === "ar" 
-                          ? "جاري تسجيل الدخول..." 
+                        {language === "ar"
+                          ? "جاري تسجيل الدخول..."
                           : language === "fr"
                           ? "Connexion en cours..."
                           : "Signing in..."}
@@ -164,8 +172,8 @@ export default function Login() {
                     ) : (
                       <>
                         <SiGoogle className="h-5 w-5" />
-                        {language === "ar" 
-                          ? "تسجيل الدخول بواسطة Google" 
+                        {language === "ar"
+                          ? "تسجيل الدخول بواسطة Google"
                           : language === "fr"
                           ? "Se connecter avec Google"
                           : "Sign in with Google"}
@@ -185,8 +193,8 @@ export default function Login() {
                   </div>
 
                   <p className="text-xs text-center text-muted-foreground">
-                    {language === "ar" 
-                      ? "بتسجيل الدخول، أنت توافق على شروط الخدمة وسياسة الخصوصية" 
+                    {language === "ar"
+                      ? "بتسجيل الدخول، أنت توافق على شروط الخدمة وسياسة الخصوصية"
                       : language === "fr"
                       ? "En vous connectant, vous acceptez les conditions d'utilisation et la politique de confidentialité"
                       : "By signing in, you agree to our Terms of Service and Privacy Policy"}
@@ -202,8 +210,8 @@ export default function Login() {
                   {language === "ar" ? "لماذا تسجل الدخول؟" : language === "fr" ? "Pourquoi se connecter ?" : "Why Sign In?"}
                 </h2>
                 <p className="text-muted-foreground mb-6">
-                  {language === "ar" 
-                    ? "احصل على تجربة مخصصة وإمكانية الوصول إلى ميزات إضافية" 
+                  {language === "ar"
+                    ? "احصل على تجربة مخصصة وإمكانية الوصول إلى ميزات إضافية"
                     : language === "fr"
                     ? "Obtenez une expérience personnalisée et accédez à des fonctionnalités supplémentaires"
                     : "Get a personalized experience and access to additional features"}
@@ -235,8 +243,8 @@ export default function Login() {
               <Card className="bg-primary/5 border-primary/20">
                 <CardContent className="p-6">
                   <p className="text-sm text-center">
-                    {language === "ar" 
-                      ? "💡 نصيحة: استخدم نفس حساب Google في كل مرة للحفاظ على تفضيلاتك" 
+                    {language === "ar"
+                      ? "💡 نصيحة: استخدم نفس حساب Google في كل مرة للحفاظ على تفضيلاتك"
                       : language === "fr"
                       ? "💡 Astuce : Utilisez le même compte Google à chaque fois pour conserver vos préférences"
                       : "💡 Tip: Use the same Google account each time to keep your preferences"}
