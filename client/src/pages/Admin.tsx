@@ -32,10 +32,12 @@ import { Building2, Plus, Edit, Trash2, Search, Lock } from "lucide-react";
 import { wilayas, categories } from "@/lib/data";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useImageUpload } from "@/hooks/useImageUpload";
 import { SiGoogle } from "react-icons/si";
 import type { Factory } from "@shared/schema";
 
@@ -64,7 +66,10 @@ export default function Admin() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedFactory, setSelectedFactory] = useState<Factory | null>(null);
+  const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { t } = useLanguage();
+  const { uploadImage, uploading: imageUploading } = useImageUpload();
   const { user, isAdmin, isLoading } = useAuth();
 
   if (isLoading) {
@@ -324,6 +329,46 @@ export default function Admin() {
     }));
   };
 
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = await uploadImage(file, formData.name || 'factory');
+      if (url) {
+        setFormData({ ...formData, imageUrl: url });
+        toast({
+          title: t('success'),
+          description: t('imageUploadedSuccessfully') || 'Image uploaded successfully',
+        });
+      } else {
+        toast({
+          title: t('error'),
+          description: t('imageUploadFailed') || 'Failed to upload image',
+          variant: 'destructive',
+        });
+      }
+    }
+  };
+
+  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = await uploadImage(file, `${formData.name}_logo` || 'factory_logo');
+      if (url) {
+        setFormData({ ...formData, logoUrl: url });
+        toast({
+          title: t('success'),
+          description: t('logoUploadedSuccessfully') || 'Logo uploaded successfully',
+        });
+      } else {
+        toast({
+          title: t('error'),
+          description: t('logoUploadFailed') || 'Failed to upload logo',
+          variant: 'destructive',
+        });
+      }
+    }
+  };
+
   const filteredFactories = factories.filter(factory =>
     factory.nameAr.toLowerCase().includes(searchQuery.toLowerCase()) ||
     factory.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -338,7 +383,7 @@ export default function Admin() {
             أدخل معلومات المصنع بالتفصيل
           </DialogDescription>
         </DialogHeader>
-        
+
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -516,6 +561,39 @@ export default function Admin() {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="factoryImage" className="block text-sm font-medium mb-2">
+                صورة المصنع
+              </Label>
+              <Input
+                id="factoryImage"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                data-testid="input-factory-image"
+              />
+              {formData.imageUrl && (
+                <img src={formData.imageUrl} alt="Factory" className="mt-2 w-24 h-24 object-cover rounded-md" />
+              )}
+            </div>
+            <div>
+              <Label htmlFor="factoryLogo" className="block text-sm font-medium mb-2">
+                شعار المصنع
+              </Label>
+              <Input
+                id="factoryLogo"
+                type="file"
+                accept="image/*"
+                onChange={handleLogoChange}
+                data-testid="input-factory-logo"
+              />
+              {formData.logoUrl && (
+                <img src={formData.logoUrl} alt="Factory Logo" className="mt-2 w-24 h-24 object-cover rounded-md" />
+              )}
+            </div>
+          </div>
+
           <div className="flex justify-end gap-2 pt-4">
             <Button
               type="button"
@@ -531,10 +609,11 @@ export default function Admin() {
             </Button>
             <Button
               type="submit"
-              disabled={createMutation.isPending || updateMutation.isPending}
+              disabled={createMutation.isPending || updateMutation.isPending || imageUploading}
               data-testid="button-save-factory"
             >
-              {(createMutation.isPending || updateMutation.isPending) ? "جاري الحفظ..." : "حفظ المصنع"}
+              {(createMutation.isPending || updateMutation.isPending || imageUploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {imageUploading ? (t('uploadingImage') || 'Uploading...') : (selectedFactory ? (t('updateFactory') || 'Update Factory') : (t('addFactory') || 'Add Factory'))}
             </Button>
           </div>
         </form>
@@ -601,7 +680,7 @@ export default function Admin() {
           <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <CardTitle className="text-xl">قائمة المصانع</CardTitle>
-              
+
               <Button onClick={() => {
                 resetForm();
                 setIsAddDialogOpen(true);
