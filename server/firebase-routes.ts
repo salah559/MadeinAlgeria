@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./firebase-storage";
 import { insertFactorySchema } from "@shared/firebase-types";
 import { fromError } from "zod-validation-error";
-import { adminAuth } from "./firebase-admin";
+import { verifyFirebaseToken } from "./auth-utils";
 import { uploadImageToImgBB } from "./imgbb-upload";
 import multer from "multer";
 
@@ -28,7 +28,7 @@ async function requireAuth(req: Request, res: Response, next: NextFunction) {
     }
 
     const token = authHeader.split('Bearer ')[1];
-    const decodedToken = await adminAuth.verifyIdToken(token);
+    const decodedToken = await verifyFirebaseToken(token);
 
     req.user = {
       uid: decodedToken.uid,
@@ -52,7 +52,7 @@ async function requireAdmin(req: Request, res: Response, next: NextFunction) {
     }
 
     const token = authHeader.split('Bearer ')[1];
-    const decodedToken = await adminAuth.verifyIdToken(token);
+    const decodedToken = await verifyFirebaseToken(token);
 
     if (!ADMIN_EMAILS.includes(decodedToken.email || '')) {
       return res.status(403).json({ error: "Forbidden: Admin access required" });
@@ -114,7 +114,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Token is required" });
       }
 
-      const decodedToken = await adminAuth.verifyIdToken(token);
+      const decodedToken = await verifyFirebaseToken(token);
 
       let user = await storage.getUserByEmail(decodedToken.email!);
 
@@ -123,7 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email: decodedToken.email!,
           name: decodedToken.name,
           picture: decodedToken.picture,
-          role: decodedToken.email === ADMIN_EMAILS[0] ? "admin" : "user", // Corrected ADMIN_EMAIL usage
+          role: decodedToken.email === ADMIN_EMAILS[0] ? "admin" : "user",
         });
       }
 
