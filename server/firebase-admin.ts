@@ -7,12 +7,22 @@ if (!admin.apps || admin.apps.length === 0) {
   const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
   
   if (serviceAccount) {
-    // Parse the service account JSON from environment variable
-    const serviceAccountJson = JSON.parse(serviceAccount);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccountJson),
-      projectId: projectId,
-    });
+    try {
+      // Parse the service account JSON from environment variable
+      const serviceAccountJson = JSON.parse(serviceAccount);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccountJson),
+        projectId: projectId,
+      });
+      console.log('✅ Firebase Admin initialized with service account');
+    } catch (error) {
+      console.error('❌ Failed to parse Firebase service account:', error);
+      // Fallback to emulator mode
+      admin.initializeApp({
+        projectId: projectId,
+      });
+      console.warn('⚠️  Falling back to emulator mode');
+    }
   } else {
     // For development/testing without credentials
     console.warn('⚠️  No Firebase service account credentials found. Using emulator mode.');
