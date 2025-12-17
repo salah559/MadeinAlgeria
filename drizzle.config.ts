@@ -1,2 +1,10 @@
+import { defineConfig } from "drizzle-kit";
 
-// هذا الملف لم يعد مطلوباً - تم حذفه
+export default defineConfig({
+  schema: "./shared/schema.ts",
+  out: "./drizzle",
+  dialect: "mysql",
+  dbCredentials: {
+    url: process.env.DATABASE_URL || "",
+  },
+});
