@@ -99,14 +99,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => unsubscribe();
   }, []);
 
-  async function signInWithGoogle() {
+  async function signInWithGoogle(): Promise<void> {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       await verifyAndFetchUser(result.user);
-      return result.user;
     } catch (error) {
       console.error("Error signing in with Google:", error);
-      // تسجيل الخروج في حالة فشل التحقق
       await firebaseSignOut(auth);
       throw error;
     }

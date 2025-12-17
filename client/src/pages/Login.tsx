@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SiGoogle } from "react-icons/si";
-import { Lock, ShieldCheck, Zap } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Lock, ShieldCheck, Zap, Mail, Eye, EyeOff } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,11 +13,14 @@ import SEO from "@/components/SEO";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, signInWithEmail } = useAuth();
   const [, setLocation] = useLocation();
   const { language } = useLanguage();
   const { toast } = useToast();
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (user && !isLoading) {
@@ -24,37 +28,48 @@ export default function Login() {
     }
   }, [user, isLoading, setLocation]);
 
-  const { signInWithGoogle } = useAuth();
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      toast({
+        variant: "destructive",
+        title: language === "ar" ? "خطأ" : "Error",
+        description: language === "ar" ? "يرجى إدخال البريد الإلكتروني وكلمة المرور" : "Please enter email and password",
+      });
+      return;
+    }
 
-  const handleGoogleLogin = async () => {
     setIsSigningIn(true);
     try {
-      await signInWithGoogle();
-      // The AuthContext now handles verification and setting the user state more robustly.
-      // We still add a toast for immediate user feedback.
+      await signInWithEmail(email, password);
       toast({
         title: language === "ar" ? "تم تسجيل الدخول بنجاح" : "Login successful",
         description: language === "ar" ? "جاري تحويلك..." : "Redirecting...",
       });
-      // Wait for the user state to be fully updated by AuthContext's listener
-      // or for the toast to be visible before redirecting.
       setTimeout(() => {
-        // Check user again to ensure it's set before redirecting
-        // This is a safeguard; ideally, signInWithGoogle and the AuthContext listener
-        // should reliably update the user state.
-        // We don't need to re-fetch user here as AuthContext's useEffect handles it.
         setLocation("/");
-      }, 1000); // Increased timeout slightly for better UX
+      }, 1000);
     } catch (error: any) {
-      console.error("Error during Google login:", error);
-      // Display specific error message from Firebase or a generic one
-      const errorMessage = error.message || (language === "ar" ? "حدث خطأ غير معروف" : "An unknown error occurred");
+      console.error("Error during email login:", error);
+      let errorMessage = language === "ar" ? "حدث خطأ غير معروف" : "An unknown error occurred";
+      
+      if (error.code === "auth/user-not-found") {
+        errorMessage = language === "ar" ? "لا يوجد حساب بهذا البريد الإلكتروني" : "No account found with this email";
+      } else if (error.code === "auth/wrong-password") {
+        errorMessage = language === "ar" ? "كلمة المرور غير صحيحة" : "Incorrect password";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = language === "ar" ? "البريد الإلكتروني غير صالح" : "Invalid email address";
+      } else if (error.code === "auth/invalid-credential") {
+        errorMessage = language === "ar" ? "بيانات الدخول غير صحيحة" : "Invalid credentials";
+      }
+      
       toast({
         variant: "destructive",
         title: language === "ar" ? "فشل تسجيل الدخول" : "Login failed",
         description: errorMessage,
       });
-      setIsSigningIn(false); // Reset signing in state on error
+      setIsSigningIn(false);
     }
   };
 
@@ -73,18 +88,18 @@ export default function Login() {
       titleAr: "موثوق",
       titleEn: "Trusted",
       titleFr: "De Confiance",
-      descriptionAr: "نستخدم خدمات Google الموثوقة للمصادقة",
-      descriptionEn: "We use trusted Google services for authentication",
-      descriptionFr: "Nous utilisons les services Google de confiance pour l'authentification",
+      descriptionAr: "نظام مصادقة آمن وموثوق",
+      descriptionEn: "Secure and trusted authentication system",
+      descriptionFr: "Système d'authentification sûr et fiable",
     },
     {
       icon: Zap,
       titleAr: "سريع وسهل",
       titleEn: "Fast & Easy",
       titleFr: "Rapide et Facile",
-      descriptionAr: "تسجيل دخول بنقرة واحدة فقط",
-      descriptionEn: "Login with just one click",
-      descriptionFr: "Connexion en un seul clic",
+      descriptionAr: "تسجيل دخول سهل وسريع",
+      descriptionEn: "Quick and easy login",
+      descriptionFr: "Connexion rapide et facile",
     },
   ];
 
@@ -133,77 +148,108 @@ export default function Login() {
       <main className="flex-1 py-12">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-            {/* Login Card */}
             <div className="flex justify-center lg:justify-end">
               <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
                   <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                    <Lock className="h-8 w-8 text-primary" />
+                    <Mail className="h-8 w-8 text-primary" />
                   </div>
                   <CardTitle className="text-2xl">
                     {language === "ar" ? "مرحباً بك" : language === "fr" ? "Bienvenue" : "Welcome Back"}
                   </CardTitle>
                   <CardDescription>
                     {language === "ar"
-                      ? "سجل الدخول باستخدام حساب Google الخاص بك"
+                      ? "سجل الدخول باستخدام بريدك الإلكتروني"
                       : language === "fr"
-                      ? "Connectez-vous avec votre compte Google"
-                      : "Sign in with your Google account"}
+                      ? "Connectez-vous avec votre email"
+                      : "Sign in with your email"}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <Button
-                    variant="default"
-                    size="lg"
-                    className="w-full gap-2 text-lg py-6"
-                    onClick={handleGoogleLogin}
-                    disabled={isSigningIn}
-                    data-testid="button-google-login"
-                  >
-                    {isSigningIn ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        {language === "ar"
-                          ? "جاري تسجيل الدخول..."
-                          : language === "fr"
-                          ? "Connexion en cours..."
-                          : "Signing in..."}
-                      </>
-                    ) : (
-                      <>
-                        <SiGoogle className="h-5 w-5" />
-                        {language === "ar"
-                          ? "تسجيل الدخول بواسطة Google"
-                          : language === "fr"
-                          ? "Se connecter avec Google"
-                          : "Sign in with Google"}
-                      </>
-                    )}
-                  </Button>
+                <CardContent>
+                  <form onSubmit={handleEmailLogin} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email">
+                        {language === "ar" ? "البريد الإلكتروني" : language === "fr" ? "Email" : "Email"}
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder={language === "ar" ? "أدخل بريدك الإلكتروني" : "Enter your email"}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={isSigningIn}
+                        data-testid="input-email"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="password">
+                        {language === "ar" ? "كلمة المرور" : language === "fr" ? "Mot de passe" : "Password"}
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder={language === "ar" ? "أدخل كلمة المرور" : "Enter your password"}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          disabled={isSigningIn}
+                          data-testid="input-password"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute left-0 top-0 h-full px-3"
+                          onClick={() => setShowPassword(!showPassword)}
+                          data-testid="button-toggle-password"
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
 
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t" />
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="w-full"
+                      disabled={isSigningIn}
+                      data-testid="button-login"
+                    >
+                      {isSigningIn ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                          {language === "ar" ? "جاري تسجيل الدخول..." : language === "fr" ? "Connexion..." : "Signing in..."}
+                        </>
+                      ) : (
+                        language === "ar" ? "تسجيل الدخول" : language === "fr" ? "Se connecter" : "Sign In"
+                      )}
+                    </Button>
+                  </form>
+
+                  <div className="mt-6 text-center space-y-4">
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                          {language === "ar" ? "أو" : language === "fr" ? "Ou" : "Or"}
+                        </span>
+                      </div>
                     </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-2 text-muted-foreground">
-                        {language === "ar" ? "آمن وموثوق" : language === "fr" ? "Sûr et fiable" : "Secure & Trusted"}
-                      </span>
-                    </div>
+
+                    <p className="text-sm text-muted-foreground">
+                      {language === "ar" ? "ليس لديك حساب؟" : language === "fr" ? "Pas de compte ?" : "Don't have an account?"}{" "}
+                      <Link href="/register" className="text-primary hover:underline font-medium" data-testid="link-register">
+                        {language === "ar" ? "إنشاء حساب جديد" : language === "fr" ? "Créer un compte" : "Create Account"}
+                      </Link>
+                    </p>
                   </div>
-
-                  <p className="text-xs text-center text-muted-foreground">
-                    {language === "ar"
-                      ? "بتسجيل الدخول، أنت توافق على شروط الخدمة وسياسة الخصوصية"
-                      : language === "fr"
-                      ? "En vous connectant, vous acceptez les conditions d'utilisation et la politique de confidentialité"
-                      : "By signing in, you agree to our Terms of Service and Privacy Policy"}
-                  </p>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Features Section */}
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold mb-4">
@@ -239,18 +285,6 @@ export default function Login() {
                   </Card>
                 ))}
               </div>
-
-              <Card className="bg-primary/5 border-primary/20">
-                <CardContent className="p-6">
-                  <p className="text-sm text-center">
-                    {language === "ar"
-                      ? "💡 نصيحة: استخدم نفس حساب Google في كل مرة للحفاظ على تفضيلاتك"
-                      : language === "fr"
-                      ? "💡 Astuce : Utilisez le même compte Google à chaque fois pour conserver vos préférences"
-                      : "💡 Tip: Use the same Google account each time to keep your preferences"}
-                  </p>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>
