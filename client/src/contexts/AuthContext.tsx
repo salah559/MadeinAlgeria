@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-// PHP Backend URL - update this for your cPanel deployment
-const PHP_API_BASE = import.meta.env.VITE_PHP_API_URL || "";
+// API Base URL - uses Express backend
+const API_BASE = "";
 
 interface User {
   id: string;
@@ -45,7 +45,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log("Checking authentication status...");
       
-      const response = await fetch(`${PHP_API_BASE}/php-backend/auth_verify.php`, {
+      const response = await fetch(`${API_BASE}/api/auth/user`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log("Signing in with email...");
       
-      const response = await fetch(`${PHP_API_BASE}/php-backend/login.php`, {
+      const response = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -109,7 +109,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log("Registering new user...");
       
-      const response = await fetch(`${PHP_API_BASE}/php-backend/register.php`, {
+      const response = await fetch(`${API_BASE}/api/auth/register`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -135,7 +135,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log("Logging out...");
       
-      const response = await fetch(`${PHP_API_BASE}/php-backend/logout.php`, {
+      const response = await fetch(`${API_BASE}/api/auth/logout`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -163,7 +163,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log("Requesting password reset for:", email);
       
-      const response = await fetch(`${PHP_API_BASE}/php-backend/reset_password.php`, {
+      const response = await fetch(`${API_BASE}/api/auth/reset-password`, {
         method: "POST",
         credentials: "include",
         headers: {
