@@ -1,51 +1,89 @@
-import { adminAuth } from './firebase-admin';
+import crypto from 'crypto';
+
+const JWT_SECRET = process.env.SESSION_SECRET || 'your-secret-key-change-in-production';
+
+interface TokenPayload {
+  uid: string;
+  email?: string;
+  name?: string;
+  role?: string;
+  picture?: string;
+}
 
 interface DecodedToken {
   uid: string;
   email?: string;
   name?: string;
   picture?: string;
+  role?: string;
+  iat?: number;
+  exp?: number;
 }
 
-/**
- * Verify Firebase ID token
- * In production with Firebase Admin credentials, this uses admin.auth().verifyIdToken()
- * In development without credentials, this extracts user info from the token
- */
-export async function verifyFirebaseToken(token: string): Promise<DecodedToken> {
+function base64UrlEncode(data: string): string {
+  return Buffer.from(data).toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
+function base64UrlDecode(data: string): string {
+  const padded = data + '='.repeat((4 - data.length % 4) % 4);
+  return Buffer.from(padded.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString();
+}
+
+export function generateToken(payload: TokenPayload): string {
+  const header = { alg: 'HS256', typ: 'JWT' };
+  const now = Math.floor(Date.now() / 1000);
+  const tokenPayload = {
+    ...payload,
+    iat: now,
+    exp: now + (7 * 24 * 60 * 60), // 7 days
+  };
+
+  const encodedHeader = base64UrlEncode(JSON.stringify(header));
+  const encodedPayload = base64UrlEncode(JSON.stringify(tokenPayload));
+  const signature = crypto
+    .createHmac('sha256', JWT_SECRET)
+    .update(`${encodedHeader}.${encodedPayload}`)
+    .digest('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+
+  return `${encodedHeader}.${encodedPayload}.${signature}`;
+}
+
+export function verifyToken(token: string): DecodedToken | null {
   try {
-    // Try to verify using Firebase Admin SDK
-    const decodedToken = await adminAuth.verifyIdToken(token);
-    return {
-      uid: decodedToken.uid,
-      email: decodedToken.email,
-      name: decodedToken.name,
-      picture: decodedToken.picture,
-    };
-  } catch (error) {
-    // If Admin SDK fails (e.g., in emulator mode), decode the token manually
-    // This is less secure but allows development to continue
-    console.warn('⚠️  Firebase Admin SDK verification failed, using fallback token decode');
-    
-    try {
-      // Decode JWT token (without signature verification in dev mode)
-      const parts = token.split('.');
-      if (parts.length !== 3) {
-        throw new Error('Invalid token format');
-      }
-      
-      const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-      
-      // Extract user information from token payload
-      return {
-        uid: payload.user_id || payload.sub,
-        email: payload.email,
-        name: payload.name,
-        picture: payload.picture,
-      };
-    } catch (decodeError) {
-      console.error('Failed to decode token:', decodeError);
-      throw new Error('Invalid token');
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      return null;
     }
+
+    const [encodedHeader, encodedPayload, signature] = parts;
+
+    const expectedSignature = crypto
+      .createHmac('sha256', JWT_SECRET)
+      .update(`${encodedHeader}.${encodedPayload}`)
+      .digest('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+
+    if (signature !== expectedSignature) {
+      return null;
+    }
+
+    const payload = JSON.parse(base64UrlDecode(encodedPayload)) as DecodedToken;
+
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+      return null;
+    }
+
+    return payload;
+  } catch (error) {
+    console.error('Token verification error:', error);
+    return null;
   }
 }

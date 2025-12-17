@@ -5,6 +5,7 @@ export const insertUserSchema = z.object({
   name: z.string().optional(),
   googleId: z.string().optional(),
   picture: z.string().optional(),
+  password: z.string().optional(),
   role: z.string().default("user"),
 });
 
@@ -16,6 +17,7 @@ export interface User {
   name?: string;
   googleId?: string;
   picture?: string;
+  password?: string;
   role: string;
   createdAt: Date;
 }

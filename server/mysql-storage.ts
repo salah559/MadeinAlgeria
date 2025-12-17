@@ -1,6 +1,17 @@
 import mysql from 'mysql2/promise';
 import type { Factory, InsertFactory, User, InsertUser } from '@shared/firebase-types';
-import type { IStorage } from './firebase-storage';
+
+export interface IStorage {
+  getFactories(searchQuery?: string, wilaya?: string, category?: string): Promise<Factory[]>;
+  getFactory(id: string): Promise<Factory | undefined>;
+  createFactory(factory: InsertFactory): Promise<Factory>;
+  updateFactory(id: string, factory: Partial<InsertFactory>): Promise<Factory | undefined>;
+  deleteFactory(id: string): Promise<boolean>;
+  getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser & { id?: string }): Promise<User>;
+  updateUser(id: string, user: Partial<InsertUser>): Promise<User | undefined>;
+}
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -169,8 +180,8 @@ export class MySQLStorage implements IStorage {
     const now = new Date();
 
     await pool.execute(
-      `INSERT INTO users (id, email, name, googleId, picture, role, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [id, user.email, user.name || null, user.googleId || null, user.picture || null, user.role || 'user', now]
+      `INSERT INTO users (id, email, name, googleId, picture, password, role, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, user.email, user.name || null, user.googleId || null, user.picture || null, user.password || null, user.role || 'user', now]
     );
 
     return {
@@ -179,6 +190,7 @@ export class MySQLStorage implements IStorage {
       name: user.name,
       googleId: user.googleId,
       picture: user.picture,
+      password: user.password,
       role: user.role || 'user',
       createdAt: now
     };
@@ -253,6 +265,7 @@ export class MySQLStorage implements IStorage {
       name: row.name,
       googleId: row.googleId,
       picture: row.picture,
+      password: row.password,
       role: row.role,
       createdAt: new Date(row.createdAt)
     };
