@@ -1,0 +1,75 @@
+Build a complete authentication backend using pure PHP (no framework) with the following features:
+
+1. Database: MySQL (I will use cPanel credentials)
+2. Create a database table named `users` with fields:
+   - id (INT, primary key, auto increment)
+   - email (VARCHAR, unique)
+   - password_hash (VARCHAR)
+   - is_verified (TINYINT default 0)
+   - verification_token (VARCHAR)
+   - created_at TIMESTAMP
+
+3. Features required:
+   - Register with email + password
+       * hash password using password_hash()
+       * generate a unique verification token
+       * insert user into DB with is_verified = 0
+       * send a verification email to the user with link:
+         https://mydomain.com/verify.php?token=XYZ
+   - Verify endpoint (verify.php)
+       * read token from GET
+       * update is_verified = 1 where token matches
+       * delete or nullify token
+       * show success message (HTML or JSON)
+   - Login endpoint (login.php)
+       * verify email + password_hash
+       * check if is_verified = 1
+       * if success, generate JWT token
+   - Protected endpoint test (me.php)
+       * read JWT from Authorization header
+       * decode it
+       * return user data
+
+4. Use PHPMailer to send the emails through cPanel SMTP.
+5. Create a config.php file with environment variables:
+   - DB_HOST
+   - DB_USER
+   - DB_PASS
+   - DB_NAME
+   - SMTP_HOST
+   - SMTP_PORT
+   - SMTP_USER
+   - SMTP_PASS
+   - JWT_SECRET
+   - APP_URL = "https://mydomain.com"
+
+6. Project structure:
+   /config/config.php  (DB + SMTP + JWT secret)
+   /lib/Database.php   (PDO singleton)
+   /lib/Auth.php       (register, verify, login functions)
+   /vendor/phpmailer   (email sending)
+   register.php
+   verify.php
+   login.php
+   me.php
+
+7. Provide:
+   - Full PHP code for registration form handling
+   - Full PHP code for login
+   - Full PHP file for email verification handling
+   - JWT implementation using firebase/php-jwt
+   - Example Postman collection
+
+8. Provide SQL command to create the users table.
+
+9. Provide deployment instructions for cPanel:
+   - upload files to public_html/api
+   - configure SMTP mail on cPanel
+   - configure PHP version 8+
+   - import SQL via phpMyAdmin
+
+10. JSON Response:
+   Success example:
+      { "status": true, "message": "Registered, check email" }
+   Failure example:
+      { "status": false, "message": "Invalid password" }
