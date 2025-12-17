@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { Router } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./firebase-storage";
+import { mysqlStorage as storage } from "./mysql-storage";
 import { insertFactorySchema } from "@shared/firebase-types";
 import { fromError } from "zod-validation-error";
 import { verifyFirebaseToken } from "./auth-utils";
