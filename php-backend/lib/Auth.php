@@ -18,6 +18,13 @@ class Auth {
      * Register new user
      */
     public function register($email, $password) {
+        return $this->registerWithName($email, $password, '');
+    }
+    
+    /**
+     * Register new user with name
+     */
+    public function registerWithName($email, $password, $name = '') {
         // Validate email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return ['status' => false, 'message' => 'البريد الإلكتروني غير صالح'];
@@ -42,14 +49,14 @@ class Auth {
         // Generate verification token
         $verificationToken = bin2hex(random_bytes(32));
         
-        // Insert user
+        // Insert user with name
         $stmt = $this->db->prepare(
-            "INSERT INTO users (email, password_hash, verification_token, is_verified, created_at) 
-             VALUES (?, ?, ?, 0, NOW())"
+            "INSERT INTO users (email, password_hash, name, verification_token, is_verified, role, created_at) 
+             VALUES (?, ?, ?, ?, 0, 'user', NOW())"
         );
         
         try {
-            $stmt->execute([$email, $passwordHash, $verificationToken]);
+            $stmt->execute([$email, $passwordHash, $name, $verificationToken]);
             $userId = $this->db->lastInsertId();
             
             // Send verification email

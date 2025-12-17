@@ -1,27 +1,26 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import {
-  User as FirebaseUser,
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  sendPasswordResetEmail,
-} from "firebase/auth";
-import { auth, googleProvider } from "@/lib/firebase";
-import { apiRequest } from "@/lib/queryClient";
-import type { User } from "@shared/firebase-types";
+
+// PHP Backend URL - update this for your cPanel deployment
+const PHP_API_BASE = import.meta.env.VITE_PHP_API_URL || "";
+
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+  role: string;
+  isVerified?: boolean;
+  createdAt?: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  firebaseUser: FirebaseUser | null;
   isLoading: boolean;
   isAdmin: boolean;
-  signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string, name?: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  checkAuth: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -40,113 +39,148 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
-  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  async function verifyAndFetchUser(fbUser: FirebaseUser) {
+  async function checkAuth() {
     try {
-      const token = await fbUser.getIdToken(true); // Force refresh
-
-      console.log("🔑 Verifying user with token...");
-
-      const response = await fetch("/api/auth/verify", {
-        method: "POST",
+      console.log("Checking authentication status...");
+      
+      const response = await fetch(`${PHP_API_BASE}/php-backend/auth_verify.php`, {
+        method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ token }),
-        credentials: "include",
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("❌ Verification failed:", errorData);
-        throw new Error(errorData.error || "Failed to verify user");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status && data.user) {
+          console.log("User authenticated:", data.user.email);
+          setUser(data.user);
+        } else {
+          console.log("No active session");
+          setUser(null);
+        }
+      } else {
+        console.log("Auth check failed, user not logged in");
+        setUser(null);
       }
-
-      const userData = await response.json();
-      console.log("✅ User verified successfully:", userData.email);
-      setUser(userData);
-      return userData;
     } catch (error) {
-      console.error("❌ Error verifying user:", error);
+      console.error("Error checking auth:", error);
       setUser(null);
-      throw error;
+    } finally {
+      setIsLoading(false);
     }
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
-      console.log("🔄 Auth state changed:", fbUser ? "Logged in" : "Logged out");
-
-      setFirebaseUser(fbUser);
-
-      if (fbUser) {
-        try {
-          await verifyAndFetchUser(fbUser);
-        } catch (error) {
-          console.error("❌ Error in auth state change:", error);
-          setUser(null);
-        }
-      } else {
-        setUser(null);
-      }
-
-      setIsLoading(false);
-    });
-
-    return () => unsubscribe();
+    checkAuth();
   }, []);
 
-  async function signInWithGoogle(): Promise<void> {
+  async function signInWithEmail(email: string, password: string): Promise<void> {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      await verifyAndFetchUser(result.user);
+      console.log("Signing in with email...");
+      
+      const response = await fetch(`${PHP_API_BASE}/php-backend/login.php`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.status) {
+        throw new Error(data.message || "فشل تسجيل الدخول");
+      }
+
+      console.log("Login successful:", data.user?.email);
+      setUser(data.user);
     } catch (error) {
-      console.error("Error signing in with Google:", error);
-      await firebaseSignOut(auth);
+      console.error("Error signing in:", error);
       throw error;
     }
   }
 
-  async function signInWithEmail(email: string, password: string) {
+  async function signUpWithEmail(email: string, password: string, name?: string): Promise<void> {
     try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      await verifyAndFetchUser(result.user);
-    } catch (error) {
-      console.error("Error signing in with email:", error);
-      throw error;
-    }
-  }
+      console.log("Registering new user...");
+      
+      const response = await fetch(`${PHP_API_BASE}/php-backend/register.php`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, name: name || "" }),
+      });
 
-  async function signUpWithEmail(email: string, password: string, name?: string) {
-    try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      await verifyAndFetchUser(result.user);
+      const data = await response.json();
+
+      if (!response.ok || !data.status) {
+        throw new Error(data.message || "فشل التسجيل");
+      }
+
+      console.log("Registration successful");
     } catch (error) {
       console.error("Error signing up:", error);
       throw error;
     }
   }
 
-  async function logout() {
+  async function logout(): Promise<void> {
     try {
-      await firebaseSignOut(auth);
+      console.log("Logging out...");
+      
+      const response = await fetch(`${PHP_API_BASE}/php-backend/logout.php`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error("Logout request failed:", data);
+      }
+
       setUser(null);
-      setFirebaseUser(null);
+      console.log("Logged out successfully");
       window.location.href = "/";
     } catch (error) {
-      console.error("Error signing out:", error);
-      throw error;
+      console.error("Error logging out:", error);
+      setUser(null);
+      window.location.href = "/";
     }
   }
 
-  async function resetPassword(email: string) {
+  async function resetPassword(email: string): Promise<void> {
     try {
-      await sendPasswordResetEmail(auth, email);
+      console.log("Requesting password reset for:", email);
+      
+      const response = await fetch(`${PHP_API_BASE}/php-backend/reset_password.php`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.status) {
+        throw new Error(data.message || "فشل إرسال رابط إعادة تعيين كلمة المرور");
+      }
+
+      console.log("Password reset email sent");
     } catch (error) {
-      console.error("Error sending password reset email:", error);
+      console.error("Error resetting password:", error);
       throw error;
     }
   }
@@ -156,14 +190,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const value = {
     user,
-    firebaseUser,
     isLoading,
     isAdmin,
-    signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,
     logout,
     resetPassword,
+    checkAuth,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

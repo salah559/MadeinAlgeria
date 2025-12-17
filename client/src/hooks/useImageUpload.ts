@@ -1,6 +1,4 @@
-
 import { useState } from 'react';
-import { apiRequest } from '@/lib/queryClient';
 
 export function useImageUpload() {
   const [uploading, setUploading] = useState(false);
@@ -19,9 +17,7 @@ export function useImageUpload() {
 
       const response = await fetch('/api/upload/image', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${await (await import('@/lib/firebase')).auth.currentUser?.getIdToken()}`,
-        },
+        credentials: 'include',
         body: formData,
       });
 

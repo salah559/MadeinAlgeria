@@ -62,6 +62,58 @@ class Mailer {
     }
     
     /**
+     * Send password reset email
+     * @return bool|string Returns true on success, error message on failure
+     */
+    public static function sendPasswordResetEmail($toEmail, $token, $resetUrl = null) {
+        if (!$resetUrl) {
+            $resetUrl = (defined('FRONTEND_URL') ? FRONTEND_URL : APP_URL) . "/reset-password?token=" . $token;
+        }
+        
+        $subject = "Reset Your Password";
+        
+        $htmlBody = "
+        <!DOCTYPE html>
+        <html dir='rtl' lang='ar'>
+        <head>
+            <meta charset='UTF-8'>
+        </head>
+        <body style='font-family: Arial, sans-serif; direction: rtl;'>
+            <div style='max-width: 600px; margin: 0 auto; padding: 20px;'>
+                <h2 style='color: #333;'>إعادة تعيين كلمة المرور</h2>
+                <p>مرحباً،</p>
+                <p>لقد طلبت إعادة تعيين كلمة المرور الخاصة بك. انقر على الزر أدناه:</p>
+                <p style='text-align: center;'>
+                    <a href='{$resetUrl}' 
+                       style='display: inline-block; padding: 12px 24px; background-color: #007bff; 
+                              color: white; text-decoration: none; border-radius: 5px;'>
+                        إعادة تعيين كلمة المرور
+                    </a>
+                </p>
+                <p>أو انسخ الرابط التالي:</p>
+                <p style='word-break: break-all; color: #666;'>{$resetUrl}</p>
+                <p style='color: #ff6600; font-size: 14px;'>
+                    <strong>تنبيه:</strong> هذا الرابط صالح لمدة ساعة واحدة فقط.
+                </p>
+                <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
+                <p style='color: #999; font-size: 12px;'>
+                    إذا لم تطلب إعادة تعيين كلمة المرور، يمكنك تجاهل هذا البريد.
+                </p>
+            </div>
+        </body>
+        </html>
+        ";
+        
+        $result = self::sendSmtp($toEmail, $subject, $htmlBody);
+        
+        if ($result === true) {
+            return true;
+        }
+        
+        return self::$lastError ?: 'فشل إرسال البريد الإلكتروني';
+    }
+    
+    /**
      * Send email using SMTP
      */
     private static function sendSmtp($to, $subject, $htmlBody) {
